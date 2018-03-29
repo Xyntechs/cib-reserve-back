@@ -1,0 +1,24 @@
+{
+  "name": "cib-reserve-back",
+  "version": "1.0.0",
+  "description": "This script is invoked upon request from users application to manipulate availabe time slots for reservation and return the service providing counters and availabe time slots.",
+  "main": "index.js",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ahmedHusseinF/cib-reserve-back.git"
+  },
+  "author": "Xyntechs, Mariam",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ahmedHusseinF/cib-reserve-back/issues"
+  },
+  "homepage": "https://github.com/ahmedHusseinF/cib-reserve-back#readme"
+}
