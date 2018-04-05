@@ -22,24 +22,16 @@ exports.addMessage = functions.https.onRequest((req, res) => {
 });
 
 
-var dayTimeSlot = function (start, end, clientId) {
-  this.start = start;
-  this.end = end;
-  this.clientId = clientId;
+var dayTimeSlot = {
+  start: '',
+  end: ''
   //if the Time Slot is not registered initially or set free by the user 
   //the clientId field should be 0
 }
 
-var dayTimeFrame = {
-  timeSlots =[],
-  day,
-  month,
-  year
-}
+var counter = { counterId: "", timeSlots: [] };
 
-
-
-
+var counters = [];
 
 var prepareReservations = {
 
@@ -52,85 +44,99 @@ var prepareReservations = {
     var year = currentDate.getFullYear();
 
 
-    var branchReservations = admin.firestore.collection(bank).doc(branch).collection('Reservations');
+    var timeFramesRef = admin.firestore.collection(bank).doc(branch).collection('TimeFrames');
     branchReservations.get().then(function (querySnapshot) {
       if (!querySnapshot.exists() || querySnapshot.docs.legnth() == 0) {
         return;
       }
     }).catch(err => {
-      console.log('Error getting documents', err);
+      throw new Error('Error getting documents');
     });
 
 
-
-    // this is the rest of the application.
-    // deal with caution.
-
-    //lw el ragl geh fe m3ad 8er m3ado aw geh mn 8er ma ysgl 3la el site
-    //  - el ragl.kickout = true
-    //lw l2
-    //  - welcome el 3meel with open arms.
-
-    // end of application code.
-    // run with caution.
-
-
-    var currentBranchReservations = branchReservations.where('day', '>=', day).where('month', '>=', mon).where('year', '>=', year);
     var Exist;
-    branchReservations.get().then(function (querySnapshot) {
+    timeFramesRef.get().then(function (querySnapshot) {
       querySnapshot.forEach(doc => {
-        Exist = false;
-        currentBranchReservations.get().then(function (currQuerySnapshot) {
-          currQuerySnapshot.forEach(currDoc => {
-            if (doc == currDoc)
-              Exist = true;
-          })
-        }).catch(err => {
-          console.log('Error getting documents', err);
-        });
+        if (doc.getData('year') > year) {
+          Exist = true;
+        }
+        else if (doc.getData('year') == year && doc.getData('month') > month) {
+          Exist = true;
+        }
+        else if (doc.getData('year') == year && doc.getData('month') == month && doc.getData('day') >= day) {
+          Exist = true;
+        }
+        else {
+          Exist = false;
+        }
         if (!Exist)
           doc.delete();
-      }
-      )
+      });
     });
   },
 
   //Something like singleton but on database reference to create the DayTimeFrame
-  findORCreateDayTimeFrame(date) {
-    var branchReservations = admin.firestore.collection(bank).doc(branch).collection('Reservations');
+  findORCreateDayTimeFrame(date, bank, branch, service) {
+    var timeFramesRef = admin.firestore.collection(bank).doc(branch).collection('TimeFrames');
     var day, month, year;
     day = date.getDay();
     month = date.getMonth();
     year = date.getFullYear();
-    if (branchReservations.where('day', '==', day).where('month', '==', month).where('year', '==', year).exists()) {
-      dayTimeFrame.day = day;
-      dayTimeFrame.month = month;
-      dayTimeFrame.year = year;
+    if (timeFramesRef.where('day', '==', day).where('month', '==', month).where('year', '==', year).exists()) {
+      countersRef = admin.firestore.collection(bank).doc(branch).collection('Counters').where('Service Name', '==', service);
+      if (!countersRef.exists()) {
+        throw new Error('There is no counter supports this service');
+      }
+      countersRef.get().then(counterSnapshot => {
+        counterSnapshot.forEach(doc => {
+
+          counterTimeSlots = timeFrame.where('counterId', '==', doc.id).get().then(timeFrameSnapShot => {
+            timeFrameSnapShot.forEach(counterTimeSlot => {
+              dayTimeSlot.start = counterTimeSlot.getData('start');
+              dayTimeSlot.end = counterTimeSlot.getData('end');
+              counter.counterId = counterTimeSlot.getData('counterId');
+              counter.timeSlots.push(dayTimeSlot);
+            });
+            counters.push(counter);
+
+          });
+        }
+        )
+      }
+      )
+    }
+    else {
       var branchReference = admin.firestore.collection(bank).doc(branch);
+      //Create day Time Frame and store it in the database
 
       //Get working hours
       var workHrs;
       branchReference.get().then(doc => {
         workHrs = doc.Data().get('Working Hours').split('-'); //start: workHrs[0], end: workHrs[1]
-      }
-        //Divide the working hrs according to the service for the counters supporting this service
-
-
-
-
-
-      ).catch(err => {
-        console.log('Error getting document', err);
       });
 
+      var startHrs = parseInt(workHrs[0].split(':')[0]);
+      var startMins = parseInt(workHrs[0].split(':')[1]);
+      var serviceETA = parseInt(branchReference.collection(''));
+
+      var endHrs = parseInt(workHrs[1].split(':')[0]);
+      var endMins = parseInt(workHrs[1].split(':')[1]);
+      //Divide the working hrs according to the service for the counters supporting this service
+      branchReference.collection('Counters').where('', '', service).get().then(querySnapshot => {
+        querySnapshot.forEach(counter => {
+          //for each counter create the timeslots  
+          counter.get('')
+
+        });
+
+      });
+      var numOfSlots = ((endHrs - startHrs) * 60 + (endMins - startMins)) /;
+
+
+
 
     }
-    else {
-      //Create day Time Frame and store it in the database
-
-
-
-    }
+    return counters;
   }
 }
 
@@ -149,7 +155,7 @@ exports.returnAvailableSlots = functions.https.onRequest((req, res) => {
   //Is the client already has a date?
   var branchReservations = admin.firestore.collection(bank).doc(branch).collection('Reservations');
   branchReservations.get().then(function (querySnapshot) {
-    if (querySnapshot.where('clientID', '=', clientID).exists()) {
+    if (querySnapshot.where('clientId', '=', clientId).exists()) {
       return;
     }
   }).catch(err => {
@@ -159,15 +165,17 @@ exports.returnAvailableSlots = functions.https.onRequest((req, res) => {
 
   var bank = req.body.bank;
   var branch = req.body.branch;
-  var userID = req.body.clientID;
+  var userID = req.body.clientId;
   var service = req.body.service;
-  var date = req.body.date;
+  var date = new date(req.body.date); //new date('11/7/2017');
 
   prepareReservations.deleteAnyPastReservations(bank, branch);
-  var DayTimeFrame = prepareReservations.findORCreateDayTimeFrame(date, bank, branch, service);
-
-
-
+  try {
+    var DayTimeFrame = prepareReservations.findORCreateDayTimeFrame(date, bank, branch, service);
+  }
+  catch (err) {
+    console.log(err.message);
+  }
 });
 
 
