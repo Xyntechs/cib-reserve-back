@@ -1,53 +1,54 @@
-const SIGTERM = require('constants');
+const SIGTERM = require("constants");
 
-//Requirments 
+//Requirments
 //The Cloud Functions for Firebase SDK to create Cloud Functions and setup triggers.
 //The Firebase Admin SDK to access the Firebase Realtime Database.
-const functions = require('firebase-functions');
-const admin = require('firebase-admin');
-const bp = require('body-parser');
-admin.initializeApp();
+const functions = require("firebase-functions");
+const admin = require("firebase-admin");
+const bp = require("body-parser");
+const express = require("express");
+const app = express();
 
+app.use(bp.json());
+
+admin.initializeApp();
 
 const DB = admin.firestore();
 
 // Take the text parameter passed to this HTTP endpoint and insert it into the
-// Realtime Database under the path /messages/:pushId/original
-exports.addMessage = functions.https.onRequest((req, res) => {
-
+// Realtime Database under the path /messages/:pushId/original\
+app.post("/addMessage", (req, res) => {
   // Add a new document in collection "cities" with ID 'LA'
   try {
     var queryData = {
       msg: req.query.text
     };
-    DB.collection('testMessages').doc('addMessageTest').set(queryData)
+    DB.collection("testMessages")
+      .doc("addMessageTest")
+      .set(queryData)
       .then(() => {
         res.send(req.query.text);
       })
-      .catch(function (error) {
+      .catch(function(error) {
         res.send("Error writing document: ", error);
       });
-
-  }
-  catch (err) {
+  } catch (err) {
     res.send(err.message);
   }
 });
 
-
 var dayTimeSlot = {
-  start: '',
-  end: ''
-  //if the Time Slot is not registered initially or set free by the user 
+  start: "",
+  end: ""
+  //if the Time Slot is not registered initially or set free by the user
   //the clientId field should be 0
-}
+};
 
 var counter = { counterId: "", timeSlots: [] };
 
 var counters = [];
 
 var prepareReservations = {
-
   //This function is to delete any past reservations from the database
   deleteAnyPastReservations(bank, branch) {
     //Get current day time
@@ -56,35 +57,40 @@ var prepareReservations = {
     var day = currentDate.getDay();
     var year = currentDate.getFullYear();
 
-
-    var timeFramesRef = DB.collection(bank).doc(branch).collection('TimeFrames');
-    branchReservations.get().then(function (querySnapshot) {
-      if (!querySnapshot.exists() || querySnapshot.docs.legnth() == 0) {
-        throw new Error("There isn't any reservations");
-
-      }
-    }).catch(err => {
-      throw new Error('Error getting documents');
-    });
-
+    var timeFramesRef = DB.collection(bank)
+      .doc(branch)
+      .collection("TimeFrames");
+    branchReservations
+      .get()
+      .then(function(querySnapshot) {
+        if (!querySnapshot.exists() || querySnapshot.docs.legnth() == 0) {
+          throw new Error("There isn't any reservations");
+        }
+      })
+      .catch(err => {
+        throw new Error("Error getting documents");
+      });
 
     var Exist;
-    timeFramesRef.get().then(function (querySnapshot) {
+    timeFramesRef.get().then(function(querySnapshot) {
       querySnapshot.forEach(doc => {
-        if (doc.getData('year') > year) {
+        if (doc.getData("year") > year) {
           Exist = true;
-        }
-        else if (doc.getData('year') == year && doc.getData('month') > month) {
+        } else if (
+          doc.getData("year") == year &&
+          doc.getData("month") > month
+        ) {
           Exist = true;
-        }
-        else if (doc.getData('year') == year && doc.getData('month') == month && doc.getData('day') >= day) {
+        } else if (
+          doc.getData("year") == year &&
+          doc.getData("month") == month &&
+          doc.getData("day") >= day
+        ) {
           Exist = true;
-        }
-        else {
+        } else {
           Exist = false;
         }
-        if (!Exist)
-          doc.delete();
+        if (!Exist) doc.delete();
       });
     });
   }
@@ -151,9 +157,9 @@ var prepareReservations = {
       return counters;
     }
     */
-}
+};
 
-exports.returnAvailableSlots = functions.https.onRequest((req, res) => {
+app.post("/returnAvailableSlots", (req, res) => {
   //recieve the bank, branch, client ID, the service, reservation day date
   /*
     //Is the client registered in the app?
@@ -176,19 +182,17 @@ exports.returnAvailableSlots = functions.https.onRequest((req, res) => {
     });
   
   */
-  req.body = JSON.parse(req.body.toString())
   var bank = req.body.bank;
   var branch = req.body.branch;
   var clientId = req.body.clientId;
   var service = req.body.service;
-  console.log(req.body);
+  console.log(req.body.toString());
   //var resDate = new Date(req.body.date); //new date('11/7/2017');
 
   try {
     prepareReservations.deleteAnyPastReservations(bank, branch);
-  }
-  catch (err) {
-    console.log(err)
+  } catch (err) {
+    console.log(err);
     res.send(err.message);
   }
 
@@ -204,6 +208,13 @@ exports.returnAvailableSlots = functions.https.onRequest((req, res) => {
   //res.status(200).send(counters);
 });
 
+const api = functions.https.onRequest((request, response) => {
+  if (!request.path) {
+    request.url = `/${request.url}`; // prepend '/' to keep query params if any
+  }
+  return app(request, response);
+});
 
-
-
+module.exports = {
+  api
+};
