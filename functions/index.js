@@ -6,6 +6,7 @@ const SIGTERM = require("constants");
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const bp = require("body-parser");
+const DBClass = require("./db");
 const express = require("express");
 const app = express();
 
@@ -13,7 +14,7 @@ app.use(bp.json());
 
 admin.initializeApp();
 
-const DB = admin.firestore();
+const DB = DBClass.getInstance();
 
 // Take the text parameter passed to this HTTP endpoint and insert it into the
 // Realtime Database under the path /messages/:pushId/original\
@@ -23,8 +24,7 @@ app.post("/addMessage", (req, res) => {
     var queryData = {
       msg: req.query.text
     };
-    DB.collection("testMessages")
-      .doc("addMessageTest")
+    DB.getDocumentFromCollection("testMessages", "addMessageTest")
       .set(queryData)
       .then(() => {
         res.send(req.query.text);
@@ -57,9 +57,10 @@ var prepareReservations = {
     var day = currentDate.getDay();
     var year = currentDate.getFullYear();
 
-    var timeFramesRef = DB.collection(bank)
-      .doc(branch)
-      .collection("TimeFrames");
+    var timeFramesRef = DB.getDocumentFromCollection(bank, branch).collection(
+      "TimeFrames"
+    );
+
     branchReservations
       .get()
       .then(function(querySnapshot) {
