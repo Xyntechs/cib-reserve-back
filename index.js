@@ -1,6 +1,8 @@
 //Requirments
 //The Cloud Functions for Firebase SDK to create Cloud Functions and setup triggers.
 //The Firebase Admin SDK to access the Firebase Realtime Database.
+// hwa da el error, good luck b2a .. en heroku by2ol can't start bsbb da 5las 
+// 23ml deploy w isa el logs ht2ol eno sh8al msh error w exit process .. tmm ana bs ma5dtish baly 3amlt a 3ashan kda basal
 const bodyParser = require("body-parser");
 const DBClass = require("./db");
 const express = require("express");
@@ -201,6 +203,6 @@ app.post("/returnAvailableSlots", (req, res) => {
   //res.status(200).send(counters);
 });
 
-const listener = app.listen(process.env.port | 3000, function () {
+const listener = app.listen(process.env.port | 5000, function () {
   console.log("Listening on port " + listener.address().port); //Listening
 });
