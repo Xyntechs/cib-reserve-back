@@ -203,6 +203,6 @@ app.post("/returnAvailableSlots", (req, res) => {
   //res.status(200).send(counters);
 });
 
-const listener = app.listen(process.env.port | 5000, function () {
+const listener = app.listen(process.env.port || 3000, function () {
   console.log("Listening on port " + listener.address().port); //Listening
 });
