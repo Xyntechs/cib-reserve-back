@@ -1,7 +1,9 @@
 const admin = require("firebase-admin");
 
+const key = require("./config/e7gez-app-firebase-adminsdk-jlmei-c8fe6a2fe6.json");
+
 admin.initializeApp({
-  credential: undefined
+  credential: admin.credential.cert(key)
 });
 
 class DBConnection {
