@@ -1,7 +1,7 @@
 {
   "name": "e7gz",
   "description": "Cloud Functions for Firebase",
-  "main": "index",
+  "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
