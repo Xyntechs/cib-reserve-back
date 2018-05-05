@@ -1,19 +1,12 @@
 //Requirments
 //The Cloud Functions for Firebase SDK to create Cloud Functions and setup triggers.
 //The Firebase Admin SDK to access the Firebase Realtime Database.
-const admin = require("firebase-admin");
 const bodyParser = require("body-parser");
 const DBClass = require("./db");
 const express = require("express");
 const app = express();
 
 app.use(bodyParser.json());
-
-admin.initializeApp({
-  credential: admin.credential.cert(
-    require("./config/e7gez-app-firebase-adminsdk-jlmei-c8fe6a2fe6.json")
-  )
-});
 
 const DB = DBClass.getInstance();
 
@@ -62,7 +55,7 @@ var prepareReservations = {
 
     branchReservations
       .get()
-      .then(function(querySnapshot) {
+      .then(function (querySnapshot) {
         if (!querySnapshot.exists() || querySnapshot.docs.legnth() == 0) {
           throw new Error("There isn't any reservations");
         }
@@ -72,7 +65,7 @@ var prepareReservations = {
       });
 
     var Exist;
-    timeFramesRef.get().then(function(querySnapshot) {
+    timeFramesRef.get().then(function (querySnapshot) {
       querySnapshot.forEach(doc => {
         if (doc.getData("year") > year) {
           Exist = true;
@@ -208,6 +201,6 @@ app.post("/returnAvailableSlots", (req, res) => {
   //res.status(200).send(counters);
 });
 
-const listener = app.listen(process.env.port | 3000, function() {
+const listener = app.listen(process.env.port | 3000, function () {
   console.log("Listening on port " + listener.address().port); //Listening
 });
