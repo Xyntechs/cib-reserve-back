@@ -42,6 +42,21 @@ var counter = { counterId: "", timeSlots: [] };
 
 var counters = [];
 
+
+var minute = { reserved: false, value: 0 };
+var dayTimeFrame = [];
+var countersDB = [];
+
+/*
+var i;
+for(i =1; i<(numOfSlots); i++)
+{
+timSlotIndex.min = i;
+timeFrameIndex.push(timeSlotIndex);
+}
+
+*/
+
 var prepareReservations = {
   //This function is to delete any past reservations from the database
   deleteAnyPastReservations(bank, branch) {
@@ -92,7 +107,7 @@ var prepareReservations = {
   /*
     //Something like singleton but on database reference to create the DayTimeFrame
     async findORCreateDayTimeFrame(date, bank, branch, service) {
-      var timeFramesRef = admin.firestore.collection(bank).doc(branch).collection('TimeFrames');
+      var timeFramesRef = DB.collection(bank).doc(branch).collection('TimeFrames');
       var day, month, year;
       day = date.getDay();
       month = date.getMonth();
@@ -117,10 +132,9 @@ var prepareReservations = {
           }
         });
       }
-      else {
-        /*
-        var branchReference = admin.firestore.collection(bank).doc(branch);
-        //Create day Time Frame and store it in the database
+      else { //yabny ana msh 3aref a send lel functio
+  
+        var branchReference = DB.collection(bank).doc(branch);
   
         //Get working hours
         var workHrs;
@@ -134,25 +148,51 @@ var prepareReservations = {
   
         var endHrs = parseInt(workHrs[1].split(':')[0]);
         var endMins = parseInt(workHrs[1].split(':')[1]);
-        //Divide the working hrs according to the service for the counters supporting this service
-        branchReference.collection('Counters').where('', '', service).get().then(querySnapshot => {
+        var numOfSlots = ((endHrs - startHrs) * 60 + (endMins - startMins));
+  
+  
+        DB.collection('Counters').get().then(querySnapshot => {
           querySnapshot.forEach(counter => {
-            //for each counter create the timeslots  
-            counter.get('')
+            if (counter.collection(Services).where("Service Id", '==', service).exists()) {
+              var i;
+              for (i = 1; i < numOfSlots; i++) {
+                minute.value = i;
+                dayTimeFrame.push(minute);
+              }
+              countersDB.push(dayTimeFrame);
+            }
   
           });
   
-        });
-        var numOfSlots = ((endHrs - startHrs) * 60 + (endMins - startMins)) /;
   
   
-        
   
-      }
+  
+  
+  
+          //Create day Time Frame and store it in the database
+  
+  
+          //Divide the working hrs according to the service for the counters supporting this service
+          branchReference.collection('Counters').where('', '', service).get().then(querySnapshot => {
+            querySnapshot.forEach(counter => {
+              //for each counter create the timeslots  
+              counter.get('')
+  
+            });
+  
+          });
+  
+  
+  
+  
+  
+        }
       return counters;
-    }
-    */
+      }*/
+
 };
+
 
 app.post("/returnAvailableSlots", (req, res) => {
   //recieve the bank, branch, client ID, the service, reservation day date
@@ -203,6 +243,6 @@ app.post("/returnAvailableSlots", (req, res) => {
   //res.status(200).send(counters);
 });
 
-const listener = app.listen(process.env.port || 5000, function () {
+const listener = app.listen(process.env.PORT || 5000, function () {
   console.log("Listening on port " + listener.address().port); //Listening
 });
