@@ -105,91 +105,90 @@ var prepareReservations = {
     });
   }
   /*
-    //Something like singleton but on database reference to create the DayTimeFrame
-    async findORCreateDayTimeFrame(date, bank, branch, service) {
-      var timeFramesRef = DB.collection(bank).doc(branch).collection('TimeFrames');
-      var day, month, year;
-      day = date.getDay();
-      month = date.getMonth();
-      year = date.getFullYear();
-      if (timeFramesRef.where('day', '==', day).where('month', '==', month).where('year', '==', year).exists()) {
-        var countersRef = admin.firestore.collection(bank).doc(branch).collection('Counters');
-        if (!countersRef.exists()) {
-          throw new Error('There is no counter supports this service');
+  //Something like singleton but on database reference to create the DayTimeFrame
+  async findORCreateDayTimeFrame(date, bank, branch, service) {
+    var timeFramesRef = DB.collection(bank).doc(branch).collection('TimeFrames');
+    var day, month, year;
+    day = date.getDay();
+    month = date.getMonth();
+    year = date.getFullYear();
+    if (timeFramesRef.where('day', '==', day).where('month', '==', month).where('year', '==', year).exists()) {
+      var countersRef = admin.firestore.collection(bank).doc(branch).collection('Counters');
+      if (!countersRef.exists()) {
+        throw new Error('There is no counter supports this service');
+      }
+      var Counters = await countersRef.get()
+      Counters.forEach(async (Counter) => {
+        if (Counter.where('Service Id', '==', service).exist()) {
+          var counterTimeSlots = timeFrame.where('counterId', '==', doc.id);
+          var timeFrameSnapShot = await counterTimeSlots.get()
+          timeFrameSnapShot.forEach(counterTimeSlot => {
+            dayTimeSlot.start = counterTimeSlot.getData('start');
+            dayTimeSlot.end = counterTimeSlot.getData('end');
+            counter.counterId = counterTimeSlot.getData('counterId');
+            counter.timeSlots.push(dayTimeSlot);
+          });
+          counters.push(counter);
         }
-        var Counters = await countersRef.get()
-        Counters.forEach(async (Counter) => {
-          if (Counter.where('Service Id', '==', service).exist()) {
-            var counterTimeSlots = timeFrame.where('counterId', '==', doc.id);
-            var timeFrameSnapShot = await counterTimeSlots.get()
-            timeFrameSnapShot.forEach(counterTimeSlot => {
-              dayTimeSlot.start = counterTimeSlot.getData('start');
-              dayTimeSlot.end = counterTimeSlot.getData('end');
-              counter.counterId = counterTimeSlot.getData('counterId');
-              counter.timeSlots.push(dayTimeSlot);
-            });
-            counters.push(counter);
+      });
+    }
+    else { //yabny ana msh 3aref a send lel functio
+
+      var branchReference = DB.collection(bank).doc(branch);
+
+      //Get working hours
+      var workHrs;
+      branchReference.get().then(doc => {
+        workHrs = doc.Data().get('Working Hours').split('-'); //start: workHrs[0], end: workHrs[1]
+      });
+
+      var startHrs = parseInt(workHrs[0].split(':')[0]);
+      var startMins = parseInt(workHrs[0].split(':')[1]);
+      var serviceETA = parseInt(branchReference.collection(''));
+
+      var endHrs = parseInt(workHrs[1].split(':')[0]);
+      var endMins = parseInt(workHrs[1].split(':')[1]);
+      var numOfSlots = ((endHrs - startHrs) * 60 + (endMins - startMins));
+
+
+      DB.collection('Counters').get().then(querySnapshot => {
+        querySnapshot.forEach(counter => {
+          if (counter.collection(Services).where("Service Id", '==', service).exists()) {
+            var i;
+            for (i = 1; i < numOfSlots; i++) {
+              minute.value = i;
+              dayTimeFrame.push(minute);
+            }
+            countersDB.push(dayTimeFrame);
           }
         });
-      }
-      else { //yabny ana msh 3aref a send lel functio
-  
-        var branchReference = DB.collection(bank).doc(branch);
-  
-        //Get working hours
-        var workHrs;
-        branchReference.get().then(doc => {
-          workHrs = doc.Data().get('Working Hours').split('-'); //start: workHrs[0], end: workHrs[1]
-        });
-  
-        var startHrs = parseInt(workHrs[0].split(':')[0]);
-        var startMins = parseInt(workHrs[0].split(':')[1]);
-        var serviceETA = parseInt(branchReference.collection(''));
-  
-        var endHrs = parseInt(workHrs[1].split(':')[0]);
-        var endMins = parseInt(workHrs[1].split(':')[1]);
-        var numOfSlots = ((endHrs - startHrs) * 60 + (endMins - startMins));
-  
-  
-        DB.collection('Counters').get().then(querySnapshot => {
+
+
+
+
+
+
+
+        //Create day Time Frame and store it in the database
+
+
+        //Divide the working hrs according to the service for the counters supporting this service
+        branchReference.collection('Counters').where('', '', service).get().then(querySnapshot => {
           querySnapshot.forEach(counter => {
-            if (counter.collection(Services).where("Service Id", '==', service).exists()) {
-              var i;
-              for (i = 1; i < numOfSlots; i++) {
-                minute.value = i;
-                dayTimeFrame.push(minute);
-              }
-              countersDB.push(dayTimeFrame);
-            }
-  
+            //for each counter create the timeslots  
+            counter.get('')
+
           });
-  
-  
-  
-  
-  
-  
-  
-          //Create day Time Frame and store it in the database
-  
-  
-          //Divide the working hrs according to the service for the counters supporting this service
-          branchReference.collection('Counters').where('', '', service).get().then(querySnapshot => {
-            querySnapshot.forEach(counter => {
-              //for each counter create the timeslots  
-              counter.get('')
-  
-            });
-  
-          });
-  
-  
-  
-  
-  
-        }
+
+        });
+
+
+
+
+
+      }
       return counters;
-      }*/
+    }*/
 
 };
 
@@ -221,7 +220,7 @@ app.post("/returnAvailableSlots", (req, res) => {
   var branch = req.body.branch;
   var clientId = req.body.clientId;
   var service = req.body.service;
-  console.log(req.body.toString());
+  console.log(JSON.stringify(req.body));// this will log the object
   //var resDate = new Date(req.body.date); //new date('11/7/2017');
 
   try {
@@ -243,6 +242,11 @@ app.post("/returnAvailableSlots", (req, res) => {
   //res.status(200).send(counters);
 });
 
+// bt3mlo AAAAAAAAAAAAAAAAAAAAAAAAA
+//shoft elgoon 3aml ezay!!
+//// YAYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY 2SHT
+//MANA 5ADT BALY .. HOWA ezay bgd msh btb3t 3al port bs ?
+// internally hwa by redirect mn 80 to el 5ra ely tl3
 const listener = app.listen(process.env.PORT || 5000, function () {
   console.log("Listening on port " + listener.address().port); //Listening
 });
