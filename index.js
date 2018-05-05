@@ -1,7 +1,6 @@
 //Requirments
 //The Cloud Functions for Firebase SDK to create Cloud Functions and setup triggers.
 //The Firebase Admin SDK to access the Firebase Realtime Database.
-const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const bodyParser = require("body-parser");
 const DBClass = require("./db");
@@ -10,7 +9,11 @@ const app = express();
 
 app.use(bodyParser.json());
 
-admin.initializeApp();
+admin.initializeApp({
+  credential: admin.credential.cert(
+    require("./config/e7gez-app-firebase-adminsdk-jlmei-c8fe6a2fe6.json")
+  )
+});
 
 const DB = DBClass.getInstance();
 
@@ -205,13 +208,6 @@ app.post("/returnAvailableSlots", (req, res) => {
   //res.status(200).send(counters);
 });
 
-const api = functions.https.onRequest((request, response) => {
-  if (!request.path) {
-    request.url = `/${request.url}`; // prepend '/' to keep query params if any
-  }
-  return app(request, response);
+const listener = app.listen(process.env.port | 3000, function() {
+  console.log("Listening on port " + listener.address().port); //Listening
 });
-
-module.exports = {
-  api
-};
