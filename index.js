@@ -216,11 +216,11 @@ app.post("/returnAvailableSlots", (req, res) => {
     });
   
   */
-  var bank = req.body.bank;
-  var branch = req.body.branch;
-  var clientId = req.body.clientId;
-  var service = req.body.service;
-  res.send(/*JSON.stringify(req.body)*/"Works!");// this will log the object
+  var bank = req.query.bank;
+  var branch = req.query.branch;
+  var clientId = req.query.clientId;
+  var service = req.query.service;
+  res.send(JSON.stringify(req.body));// this will log the object
   //var resDate = new Date(req.body.date); //new date('11/7/2017');
   /*
     try {
