@@ -220,23 +220,23 @@ app.post("/returnAvailableSlots", (req, res) => {
   var branch = req.body.branch;
   var clientId = req.body.clientId;
   var service = req.body.service;
-  console.log(JSON.stringify(req.body));// this will log the object
+  res.send(JSON.stringify(req.body));// this will log the object
   //var resDate = new Date(req.body.date); //new date('11/7/2017');
-/*
-  try {
-    prepareReservations.deleteAnyPastReservations(bank, branch);
-  } catch (err) {
-    console.log(err);
-    res.send(err.message);
-  }
-  */
-// ana harwa7 we hakaml
-// mariam mshyt !
-//bye bye :D @mariam
-// bye bye, bokra b2a bs msh hnseb el back da 
-//eshta
-//yalla salam nw :D
-//hanrwa7 we netkalm ya se7s, slam
+  /*
+    try {
+      prepareReservations.deleteAnyPastReservations(bank, branch);
+    } catch (err) {
+      console.log(err);
+      res.send(err.message);
+    }
+    */
+  // ana harwa7 we hakaml
+  // mariam mshyt !
+  //bye bye :D @mariam
+  // bye bye, bokra b2a bs msh hnseb el back da 
+  //eshta
+  //yalla salam nw :D
+  //hanrwa7 we netkalm ya se7s, slam
   /*
   try {
     prepareReservations.findORCreateDayTimeFrame(date, bank, branch, service);
