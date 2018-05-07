@@ -220,7 +220,7 @@ app.post("/returnAvailableSlots", (req, res) => {
   var branch = req.body.branch;
   var clientId = req.body.clientId;
   var service = req.body.service;
-  res.send(req.body.bank);// this will log the object
+  res.send(/*JSON.stringify(req.body)*/"Works!");// this will log the object
   //var resDate = new Date(req.body.date); //new date('11/7/2017');
   /*
     try {
