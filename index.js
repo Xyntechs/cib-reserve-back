@@ -8,6 +8,10 @@ const database = require("./db");
 const express = require("express");
 const app = express();
 
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }));
+
+// parse application/json
 app.use(bodyParser.json());
 
 // Take the text parameter passed to this HTTP endpoint and insert it into the
@@ -15,7 +19,7 @@ app.use(bodyParser.json());
 app.post("/addMessage", async (req, res) => {
   // Add a new document in collection "cities" with ID 'LA'
   try {
-    console.log(JSON.stringify(req.body));
+    console.log(JSON.stringify(req.body), "addMessage route");
     res.status(200).send(req.body);
   } catch (err) {
     res.send(err.message);
