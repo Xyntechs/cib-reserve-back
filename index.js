@@ -212,21 +212,25 @@ app.post("/returnAvailableSlots", (req, res) => {
   var branch = req.body.branch;
   var clientId = req.body.clientId;
   var service = req.body.service;
+
+  //For testing
+  /*
+   try {
+     console.log(JSON.stringify(req.body.bank), "addMessage route");
+     res.status(200).send(req.body.bank);
+   } catch (err) {
+     res.send(err.message);
+   }
+   */
+  var resDate = new Date(req.body.date); //new date('11/7/2017');
+
   try {
-    console.log(JSON.stringify(req.body.bank), "addMessage route");
-    res.status(200).send(req.body.bank);
+    prepareReservations.deleteAnyPastReservations(bank, branch);
   } catch (err) {
+    console.log(err);
     res.send(err.message);
   }
-  //var resDate = new Date(req.body.date); //new date('11/7/2017');
-  /*
-    try {
-      prepareReservations.deleteAnyPastReservations(bank, branch);
-    } catch (err) {
-      console.log(err);
-      res.send(err.message);
-    }
-    */
+
   // ana harwa7 we hakaml
   // mariam mshyt !
   //bye bye :D @mariam
