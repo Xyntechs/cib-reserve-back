@@ -213,8 +213,8 @@ app.post("/returnAvailableSlots", (req, res) => {
   var clientId = req.body.clientId;
   var service = req.body.service;
   try {
-    console.log(JSON.stringify(req.body), "addMessage route");
-    res.status(200).send(req.body);
+    console.log(JSON.stringify(req.body.bank), "addMessage route");
+    res.status(200).send(req.body.bank);
   } catch (err) {
     res.send(err.message);
   }
