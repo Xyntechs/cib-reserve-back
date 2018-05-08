@@ -208,10 +208,10 @@ app.post("/returnAvailableSlots", (req, res) => {
     });
   
   */
-  var bank = req.query.bank;
-  var branch = req.query.branch;
-  var clientId = req.query.clientId;
-  var service = req.query.service;
+  var bank = req.body.bank;
+  var branch = req.body.branch;
+  var clientId = req.body.clientId;
+  var service = req.body.service;
   try {
     console.log(JSON.stringify(req.body), "addMessage route");
     res.status(200).send(req.body);
