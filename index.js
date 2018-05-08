@@ -64,6 +64,9 @@ var prepareReservations = {
       .getDocumentFromCollection(bank, branch)
       .collection("TimeFrames");
 
+    var branchReservations = database
+      .getDocumentFromCollection(bank, branch);
+
     branchReservations
       .get()
       .then(function (querySnapshot) {
