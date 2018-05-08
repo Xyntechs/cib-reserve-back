@@ -66,7 +66,7 @@ var prepareReservations = {
 
     branchReservations
       .get()
-      .then(function(querySnapshot) {
+      .then(function (querySnapshot) {
         if (!querySnapshot.exists() || querySnapshot.docs.legnth() == 0) {
           throw new Error("There isn't any reservations");
         }
@@ -76,7 +76,7 @@ var prepareReservations = {
       });
 
     var Exist;
-    timeFramesRef.get().then(function(querySnapshot) {
+    timeFramesRef.get().then(function (querySnapshot) {
       querySnapshot.forEach(doc => {
         if (doc.getData("year") > year) {
           Exist = true;
@@ -212,7 +212,12 @@ app.post("/returnAvailableSlots", (req, res) => {
   var branch = req.query.branch;
   var clientId = req.query.clientId;
   var service = req.query.service;
-  res.send(bank); // this will log the object
+  try {
+    console.log(JSON.stringify(req.body), "addMessage route");
+    res.status(200).send(req.body);
+  } catch (err) {
+    res.send(err.message);
+  }
   //var resDate = new Date(req.body.date); //new date('11/7/2017');
   /*
     try {
@@ -241,6 +246,6 @@ app.post("/returnAvailableSlots", (req, res) => {
   //res.status(200).send(counters);
 });
 
-const listener = app.listen(process.env.PORT || 5000, function() {
+const listener = app.listen(process.env.PORT || 5000, function () {
   console.log("Listening on port " + listener.address().port); //Listening
 });
