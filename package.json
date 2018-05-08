@@ -1,15 +1,16 @@
 {
   "name": "e7gz",
+  "private": true,
   "description": "Cloud Functions for Firebase",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
   "dependencies": {
+    "angularfire2": "^5.0.0-rc.7",
     "body-parser": "^1.18.2",
     "express": "^4.16.3",
-    "firebase-admin": "^5.12.0",
-    "firebase-functions": "^1.0.1"
-  },
-  "private": true
+    "firebase": "^4.13.1",
+    "firebase-admin": "^5.12.0"
+  }
 }

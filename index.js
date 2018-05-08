@@ -1,31 +1,22 @@
 //Requirments
 //The Cloud Functions for Firebase SDK to create Cloud Functions and setup triggers.
 //The Firebase Admin SDK to access the Firebase Realtime Database.
-// hwa da el error, good luck b2a .. en heroku by2ol can't start bsbb da 5las 
+// hwa da el error, good luck b2a .. en heroku by2ol can't start bsbb da 5las
 // 23ml deploy w isa el logs ht2ol eno sh8al msh error w exit process .. tmm ana bs ma5dtish baly 3amlt a 3ashan kda basal
 const bodyParser = require("body-parser");
-const DBClass = require("./db");
+const database = require("./db");
 const express = require("express");
 const app = express();
 
 app.use(bodyParser.json());
-
-const DB = DBClass.getInstance();
 
 // Take the text parameter passed to this HTTP endpoint and insert it into the
 // Realtime Database under the path /messages/:pushId/original\
 app.post("/addMessage", async (req, res) => {
   // Add a new document in collection "cities" with ID 'LA'
   try {
-    var queryData = {
-      msg: req.query.text
-    };
-
-    await DB.getDocumentFromCollection("testMessages", "addMessageTest").set(
-      queryData
-    );
-
-    res.send(req.query.text);
+    console.log(JSON.stringify(req.body));
+    res.status(200).send(req.body);
   } catch (err) {
     res.send(err.message);
   }
@@ -41,7 +32,6 @@ var dayTimeSlot = {
 var counter = { counterId: "", timeSlots: [] };
 
 var counters = [];
-
 
 var minute = { reserved: false, value: 0 };
 var dayTimeFrame = [];
@@ -66,13 +56,13 @@ var prepareReservations = {
     var day = currentDate.getDay();
     var year = currentDate.getFullYear();
 
-    var timeFramesRef = DB.getDocumentFromCollection(bank, branch).collection(
-      "TimeFrames"
-    );
+    var timeFramesRef = database
+      .getDocumentFromCollection(bank, branch)
+      .collection("TimeFrames");
 
     branchReservations
       .get()
-      .then(function (querySnapshot) {
+      .then(function(querySnapshot) {
         if (!querySnapshot.exists() || querySnapshot.docs.legnth() == 0) {
           throw new Error("There isn't any reservations");
         }
@@ -82,7 +72,7 @@ var prepareReservations = {
       });
 
     var Exist;
-    timeFramesRef.get().then(function (querySnapshot) {
+    timeFramesRef.get().then(function(querySnapshot) {
       querySnapshot.forEach(doc => {
         if (doc.getData("year") > year) {
           Exist = true;
@@ -107,7 +97,7 @@ var prepareReservations = {
   /*
     //Something like singleton but on database reference to create the DayTimeFrame
     async findORCreateDayTimeFrame(date, bank, branch, service) {
-      var timeFramesRef = DB.collection(bank).doc(branch).collection('TimeFrames');
+      var timeFramesRef = database.collection(bank).doc(branch).collection('TimeFrames');
       var day, month, year;
       day = date.getDay();
       month = date.getMonth();
@@ -134,7 +124,7 @@ var prepareReservations = {
       }
       else { //yabny ana msh 3aref a send lel functio
   
-        var branchReference = DB.collection(bank).doc(branch);
+        var branchReference = database.collection(bank).doc(branch);
   
         //Get working hours
         var workHrs;
@@ -151,7 +141,7 @@ var prepareReservations = {
         var numOfSlots = ((endHrs - startHrs) * 60 + (endMins - startMins));
   
   
-        DB.collection('Counters').get().then(querySnapshot => {
+        database.collection('Counters').get().then(querySnapshot => {
           querySnapshot.forEach(counter => {
             if (counter.collection(Services).where("Service Id", '==', service).exists()) {
               var i;
@@ -190,9 +180,7 @@ var prepareReservations = {
         }
       return counters;
       }*/
-
 };
-
 
 app.post("/returnAvailableSlots", (req, res) => {
   //recieve the bank, branch, client ID, the service, reservation day date
@@ -221,11 +209,11 @@ app.post("/returnAvailableSlots", (req, res) => {
   var branch = req.body.branch;
   var clientId = req.body.clientId;
   var service = req.body.service;
-  console.log(req.body.toString());
+  console.log(JSON.stringify(req.body));
   //var resDate = new Date(req.body.date); //new date('11/7/2017');
 
   try {
-    prepareReservations.deleteAnyPastReservations(bank, branch);
+    //prepareReservations.deleteAnyPastReservations(bank, branch);
   } catch (err) {
     console.log(err);
     res.send(err.message);
@@ -243,6 +231,13 @@ app.post("/returnAvailableSlots", (req, res) => {
   //res.status(200).send(counters);
 });
 
-const listener = app.listen(process.env.PORT || 5000, function () {
+app.post("/api/v1/login", async (req, res) => {
+  const email = req.body.email;
+  const password = req.body.password;
+
+  database.getCollection(database.userCollection);
+});
+
+const listener = app.listen(process.env.PORT || 5000, function() {
   console.log("Listening on port " + listener.address().port); //Listening
 });

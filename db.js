@@ -1,14 +1,8 @@
-const admin = require("firebase-admin");
-
-const key = require("./config/e7gez-app-firebase-adminsdk-jlmei-c8fe6a2fe6.json");
-
-admin.initializeApp({
-  credential: admin.credential.cert(key)
-});
+const Firebase = require("./firebase");
 
 class DBConnection {
   constructor() {
-    this.firestore = admin.firestore();
+    this._firestore = Firebase.getFireStore();
   }
 
   static getInstance() {
@@ -22,7 +16,7 @@ class DBConnection {
    * @param {String} collectionName
    */
   getCollection(collectionName) {
-    return this.firestore.collection(collectionName);
+    return this._firestore.collection(collectionName);
   }
 
   /**
@@ -35,4 +29,4 @@ class DBConnection {
   }
 }
 
-module.exports = DBConnection;
+module.exports = new DBConnection();
