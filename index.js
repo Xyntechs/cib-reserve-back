@@ -112,6 +112,7 @@ var prepareReservations = {
           console.log("Works");
           Exist = false;
           docId = doc.id;
+          console.log(docId);
         }
       });
     }).catch(err => {
