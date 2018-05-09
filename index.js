@@ -99,7 +99,7 @@ var prepareReservations = {
     var dayLookup = 'day';
 
     timeFramesRef.get().then(function (querySnapshot, docId) {
-      var batch = database.batch();
+      var batch = database.getBatch();
       querySnapshot.forEach(doc => {
         console.log(doc.data()[yearLookup]);
 

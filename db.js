@@ -21,6 +21,10 @@ class DBConnection {
     return this._firestore.collection(collectionName);
   }
 
+  getBatch() {
+    return this._firestore.batch();
+  }
+
   /**
    * @desc returns a document that exist in a certain collection
    * @param {String} collection
