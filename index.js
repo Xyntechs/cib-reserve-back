@@ -64,7 +64,9 @@ var prepareReservations = {
       .getDocumentFromCollection(bank, branch)
       .collection("TimeFrames");
 
-    var branchReservations = database
+    console.log(timeFramesRef);
+    /*
+      var branchReservations = database
       .getDocumentFromCollection(bank, branch);
 
     branchReservations
@@ -98,8 +100,10 @@ var prepareReservations = {
           Exist = false;
         }
         if (!Exist) doc.delete();
+      
       });
     });
+    */
   }
   /*
   //Something like singleton but on database reference to create the DayTimeFrame
@@ -233,6 +237,8 @@ app.post("/returnAvailableSlots", (req, res) => {
     console.log(err);
     res.send(err.message);
   }
+
+  res.status(200).send("Done");
 
   // ana harwa7 we hakaml
   // mariam mshyt !
