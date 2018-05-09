@@ -98,7 +98,7 @@ var prepareReservations = {
     var monthLookup = 'month';
     var dayLookup = 'day';
 
-    docId = timeFramesRef.get().then(function (querySnapshot) {
+    timeFramesRef.get().then(function (querySnapshot) {
       querySnapshot.forEach(doc => {
         console.log(doc.data()[yearLookup]);
 
@@ -118,16 +118,12 @@ var prepareReservations = {
           Exist = true;
         } else {
           console.log("Works");
-          Exist = false;
-          return doc.id;
+          querySnapshot.doc(doc.id).delete();
         }
-        return ''
       });
     }).catch(err => {
       console.log(err.message);
     });
-
-    if (!Exist) timeFramesRef.doc(docId).delete();
   }
   /*
   //Something like singleton but on database reference to create the DayTimeFrame
