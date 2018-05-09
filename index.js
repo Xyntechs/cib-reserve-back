@@ -185,17 +185,22 @@ app.post("/returnAvailableSlots", (req, res) => {
 
   //Is the client registered in the app?
   registeredClient = database.getDocumentFromCollection('Users', clientId);
-  registeredClient.get()
+  var Exist = registeredClient.get()
     .then((querySnap) => {
       if (!querySnap.exist) {
         console.log("User isn't registered");
-        return;
+        return false;
       }
+      return true;
     })
     .catch(err => {
       console.log(err.message);
     });
 
+  if (!Exist) {
+    res.status(200).send("No such user");
+    return;
+  }
   /*  
       //Is the client already has a date?
       var branchReservations = admin.firestore.collection(bank).doc(branch).collection('Reservations');
