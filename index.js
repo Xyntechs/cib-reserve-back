@@ -71,34 +71,25 @@ var prepareReservations = {
     //   });
 
 
-    var bankRef = database
-      .getCollection('CIB EG');
-    console.log(bankRef.doc('10th of Ramadan'));
+    // var bankRef = database
+    //   .getCollection('CIB EG');
+    // console.log(bankRef.doc('10th of Ramadan'));
 
-    bankRef.doc(' 10th of Ramadan').update(  //Just trying to set anything.
-      {
-        'Area': 'ay 7aga'// ysta enta btdeploy ela heroku ? -- nooo, da m3mol 3la 7aga tanya --8 er -- dh sha8al zy elfol t3ala awareek
-        //shoft?mashyv //yasta howa leh e7na msh bnady getInstance() ? fo2 5als
-      }//
-    )
-      .catch(err => {
-        console.log(err.message);
-      });
-    // there is no document because it is a COLLECTION
-    //10th of Ramadan is a document// tb 7awl tgeb all docs in CIB EG //done and working
-    //tb yasta howa wa5ed elpath bta3 eldocument 8alat aw fy 7aga bnt    //   var branchReservations = database
-    //   .getDocumentFromCollection(bank, branch);
-
-    // branchReservations
-    //   .get()
-    //   .then(function (querySnapshot) {
-    //     if (!querySnapshot.exists() || querySnapshot.docs.legnth() == 0) {
-    //       throw new Error("There isn't any reservations");
-    //     }
-    //   })
+    // bankRef.doc(' 10th of Ramadan').update(  //Just trying to set anything.
+    //   {
+    //     'Area': 'ay 7aga'// ysta enta btdeploy ela heroku ? -- nooo, da m3mol 3la 7aga tanya --8 er -- dh sha8al zy elfol t3ala awareek
+    //     //shoft?mashyv //yasta howa leh e7na msh bnady getInstance() ? fo2 5als
+    //   }//
+    // )
+    //   .catch(err => {
+    //     console.log(err.message);
+    //   });
 
 
-    /*
+    var timeFramesRef = database.getDocumentFromCollection(bank, branch).collection('TimeFrames');
+
+
+
     var Exist;
     timeFramesRef.get().then(function (querySnapshot) {
       querySnapshot.forEach(doc => {
@@ -124,7 +115,6 @@ var prepareReservations = {
 
       });
     });
-*/
   }
   /*
   //Something like singleton but on database reference to create the DayTimeFrame
