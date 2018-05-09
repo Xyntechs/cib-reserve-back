@@ -118,7 +118,7 @@ var prepareReservations = {
           Exist = true;
         } else {
           console.log("Works");
-          querySnapshot.doc(doc.id).delete();
+          doc.delete;
         }
       });
     }).catch(err => {
