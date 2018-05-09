@@ -176,6 +176,11 @@ var prepareReservations = {
 };
 
 app.post("/returnAvailableSlots", (req, res) => {
+  var bank = req.body.bank;
+  var branch = req.body.branch;
+  var clientId = req.body.clientId;
+  var service = req.body.service;
+
   //recieve the bank, branch, client ID, the service, reservation day date
 
   //Is the client registered in the app?
@@ -203,10 +208,7 @@ app.post("/returnAvailableSlots", (req, res) => {
       });
     
     */
-  var bank = req.body.bank;
-  var branch = req.body.branch;
-  var clientId = req.body.clientId;
-  var service = req.body.service;
+
 
   //For testing
   /*
