@@ -71,7 +71,7 @@ var prepareReservations = {
     //   });
 
 
-    var servicesRef = database
+    var bankRef = database
       .getCollection('CIB EG');
 
     bankRef.doc('10th of Ramadan').update(  //Just trying to set anything.
