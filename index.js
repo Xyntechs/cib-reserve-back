@@ -60,14 +60,16 @@ var prepareReservations = {
     var day = currentDate.getDay();
     var year = currentDate.getFullYear();
 
-    var timeFramesRef = database
+    var timeFramesRef = database.getInstance()
       .getDocumentFromCollection(bank, branch)
       .collection("Services");
 
     timeFramesRef.doc('nM7h9VziwMKujpYSy6s8').set(
       {
-        "Service Id": 123,
-        "Service ETA": 10
+
+        "Service ETA": 10,
+        "Service Id": 123
+
       }
     );
 
