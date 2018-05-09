@@ -103,18 +103,18 @@ var prepareReservations = {
       querySnapshot.forEach(doc => {
         console.log(doc.data().yearLookup);
 
-        if (doc.data().yearLookup > year) {
+        if (doc.data()[yearLookup] > year) {
           Exist = true;
 
         } else if (
-          doc.data().yearLookup == year &&
-          doc.data().monthLookup > month
+          doc.data()[yearLookup] == year &&
+          doc.data()[monthLookup] > month
         ) {
           Exist = true;
         } else if (
-          doc.data().yearLookup == year &&
-          doc.data().monthLookup == month &&
-          doc.data().dayLookup >= day
+          doc.data()[yearLookup] == year &&
+          doc.data()[monthLookup] == month &&
+          doc.data()[dayLookup] >= day
         ) {
           Exist = true;
         } else {
