@@ -93,18 +93,18 @@ var prepareReservations = {
     var Exist;
     timeFramesRef.get().then(function (querySnapshot) {
       querySnapshot.forEach(doc => {
-        if (doc.getData("year") > year) {
+        if (doc.data("year") > year) {
           Exist = true;
 
         } else if (
-          doc.getData("year") == year &&
-          doc.getData("month") > month
+          doc.data("year") == year &&
+          doc.data("month") > month
         ) {
           Exist = true;
         } else if (
-          doc.getData("year") == year &&
-          doc.getData("month") == month &&
-          doc.getData("day") >= day
+          doc.data("year") == year &&
+          doc.data("month") == month &&
+          doc.data("day") >= day
         ) {
           Exist = true;
         } else {
@@ -114,6 +114,8 @@ var prepareReservations = {
         if (!Exist) doc.delete();
 
       });
+    }).catch(err => {
+      console.log(err.message);
     });
   }
   /*
