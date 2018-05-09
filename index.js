@@ -7,6 +7,7 @@ const bodyParser = require("body-parser");
 const database = require("./db");  // m
 const express = require("express");
 const app = express();
+var Type = require('type-of-is')
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -56,7 +57,7 @@ var prepareReservations = {
   deleteAnyPastReservations(bank, branch) {
     //Get current day time
     var currentDate = new Date();
-    var month = currentDate.getMonth();
+    var month = currentDate.getMonth()+1;
     var day = currentDate.getDay();
     var year = currentDate.getFullYear();
 
