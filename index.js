@@ -212,8 +212,12 @@ app.post("/returnAvailableSlots", async (req, res) => {
               return res.status(500).json({ error: "User already has an appointment" });
             }
           });
+        }).catch(err => {
+          console.log(err.message);
         });
       });
+    }).catch(err => {
+      console.log(err.message);
     });
 
     prepareReservations.deleteAnyPastReservations(bank, branch);
