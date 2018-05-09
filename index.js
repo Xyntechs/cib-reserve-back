@@ -188,28 +188,25 @@ app.post("/returnAvailableSlots", async (req, res) => {
 
     //Is the client registered in the app?
     var registeredClient = (await database.getDocumentFromCollection('Users', clientId).get());
-    if (!registeredClient.exists) {// 55555555 exist bdl exists!! :(
+    if (!registeredClient.exists) {
       console.log("User isn't registered", registeredClient);
       return res.status(500).json({ error: "User doesn't exist" }); // lw 3ayz t return , e3ml return b res
     }
-    // enta 2a3d !
-    //sorry hashta8al ahuh 7alan
 
-    // knt bt2ol a b2a
-    //7atta lw eluser registered byraga3ly elerror
-    // h2olk leh, 3shan enta btsearch b client id, da ely hwa a ?
-    /*  
-        //Is the client already has a date?
-        var branchReservations = admin.firestore.collection(bank).doc(branch).collection('Reservations');
-        branchReservations.get().then(function (querySnapshot) {
-          if (querySnapshot.where('clientId', '==', clientId).exists()) {
-            return;
-          }
-        }).catch(err => {
-          console.log('Error getting documents', err);
-        });
-      
-      */
+
+    //Is the client already has a date?
+    // no need for await bos 3la el return kda ely hwa b3d : // tmam fhemt
+    var timeFramesRef = await database.getDocumentFromCollection(bank, branch).collection('TimeFrames').get();
+
+    timeFramesRef.forEach(doc => {
+      timeSlotReg = await doc.collection('TimeSlots').where('clientId', '==', clientId).get();
+      if (timeSlotReg.exists) {
+        console.log("User already has an appointment", registeredClient);
+        return res.status(500).json({ error: "User already has an appointment" });
+      }
+    });
+
+
 
 
     //For testing
