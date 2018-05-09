@@ -185,7 +185,7 @@ app.post("/returnAvailableSlots", (req, res) => {
 
   //Is the client registered in the app?
   registeredClient = database.getDocumentFromCollection('Users', clientId);
-  registeredClients.get()
+  registeredClient.get()
     .then((querySnap) => {
       if (!querySnap.exist) {
         res.status(200).send("User isn't registered");
