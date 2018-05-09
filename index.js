@@ -4,7 +4,7 @@
 // hwa da el error, good luck b2a .. en heroku by2ol can't start bsbb da 5las
 // 23ml deploy w isa el logs ht2ol eno sh8al msh error w exit process .. tmm ana bs ma5dtish baly 3amlt a 3ashan kda basal
 const bodyParser = require("body-parser");
-const database = require("./db");
+const database = require("./db");  // m
 const express = require("express");
 const app = express();
 
@@ -60,6 +60,17 @@ var prepareReservations = {
     var day = currentDate.getDay();
     var year = currentDate.getFullYear();
 
+    database.collection('CIB EG').get()
+      .then((snapshot) => {
+        snapshot.forEach((doc) => {
+          console.log(doc.id, '=>', doc.data());
+        });
+      })
+      .catch((err) => {
+        console.log('Error getting documents', err);
+      });
+
+    /*
     var servicesRef = database
       .getDocumentFromCollection(bank, branch)
       .collection("Services");
@@ -69,10 +80,10 @@ var prepareReservations = {
 
         "Service ETA": 10,
         "Service Id": '123'// ysta enta btdeploy ela heroku ? -- nooo, da m3mol 3la 7aga tanya --8 er -- dh sha8al zy elfol t3ala awareek
-
+//shoft?mashyv //yasta howa leh e7na msh bnady getInstance() ? fo2 5als
       }
     );
-
+*/
     //   var branchReservations = database
     //   .getDocumentFromCollection(bank, branch);
 
