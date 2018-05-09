@@ -60,7 +60,7 @@ var prepareReservations = {
     var day = currentDate.getDay();
     var year = currentDate.getFullYear();
 
-    var timeFramesRef = DB
+    var timeFramesRef = database
       .getDocumentFromCollection(bank, branch)
       .collection("Services");
 
