@@ -64,6 +64,12 @@ var prepareReservations = {
       .getDocumentFromCollection(bank, branch)
       .collection("TimeFrames");
 
+    timeFramesRef.update().set(
+      {
+        "day": "30"
+      }
+    );
+
     //   var branchReservations = database
     //   .getDocumentFromCollection(bank, branch);
 
@@ -78,6 +84,7 @@ var prepareReservations = {
     //     throw new Error("Error getting documents");
     //   });
 
+    /*
     var Exist;
     timeFramesRef.get().then(function (querySnapshot) {
       querySnapshot.forEach(doc => {
@@ -103,7 +110,7 @@ var prepareReservations = {
 
       });
     });
-
+*/
   }
   /*
   //Something like singleton but on database reference to create the DayTimeFrame
