@@ -181,7 +181,7 @@ app.post("/returnAvailableSlots", (req, res) => {
   //Is the client registered in the app?
   registeredClients = admin.firestore.collection(Clients);
   registeredClients.get().then(function (querySnapshot) {
-    if (!querySnapshot.where('clientId', '==', clientId).exists())
+    if (!querySnapshot.where('email', '==', clientId).exists())
       res.status(200).send("User isn't registered");
     return;
   }).catch(err => {
