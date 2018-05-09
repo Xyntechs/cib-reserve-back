@@ -92,7 +92,7 @@ var prepareReservations = {
 
 
 
-    var Exist;
+    var Exist = true;
     var docId;
     var yearLookup = 'year';
     var monthLookup = 'month';
@@ -121,7 +121,7 @@ var prepareReservations = {
           Exist = false;
           return doc.id;
         }
-        return NULL
+        return ''
       });
     }).catch(err => {
       console.log(err.message);
