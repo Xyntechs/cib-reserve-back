@@ -196,30 +196,24 @@ app.post("/returnAvailableSlots", async (req, res) => {
 
     //Is the client already has a date?
     // no need for await bos 3la el return kda ely hwa b3d : // tmam fhemt
-    var timeFramesRef = await database.getDocumentFromCollection(bank, branch).collection('TimeFrames').get();
-    timeFramesRef.forEach(doc => {
-      timeSlotReg = doc.ref.collection('TimeSlots').get();
-      timeSlotReg.forEach(doc => {
-        if (doc.data()['clientId'] == clientId) {
-          console.log("User already has an appointment", registeredClient);
-          return res.status(500).json({ error: "User already has an appointment" });
-        }
+    //Get timeframes referrence
+    var timeFramesRef = database.getDocumentFromCollection(bank, branch).collection('TimeFrames');
+
+
+
+
+    timeFramesRef.get().then(function (querySnapshot, docId) {
+      var batch = database.getBatch();
+      querySnapshot.forEach(doc => {
+        timeSlotReg = doc.ref.collection('TimeSlots').get();
+        timeSlotReg.forEach(doc => {
+          if (doc.data()['clientId'] == clientId) {
+            console.log("User already has an appointment", registeredClient);
+            return res.status(500).json({ error: "User already has an appointment" });
+          }
+        });
       });
     });
-
-
-
-
-    //For testing
-    /*
-     try {
-       console.log(JSON.stringify(req.body.bank), "addMessage route");
-       res.status(200).send(req.body.bank);
-     } catch (err) {
-       res.send(err.message);
-     }
-     */
-
 
     prepareReservations.deleteAnyPastReservations(bank, branch);
   }
@@ -230,7 +224,7 @@ app.post("/returnAvailableSlots", async (req, res) => {
 
   res.status(200).send("Done");
 
-  // xD xD, 7a 3mlt a 
+
   /*
   try {
     prepareReservations.findORCreateDayTimeFrame(date, bank, branch, service);
