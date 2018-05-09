@@ -8,7 +8,6 @@ const database = require("./db");
 const express = require("express");
 const app = express();
 
-const DB = database.getInstance();
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
 
