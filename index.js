@@ -64,7 +64,7 @@ var prepareReservations = {
       .getDocumentFromCollection(bank, branch)
       .collection("TimeFrames");
 
-    timeFramesRef.doc().update(
+    timeFramesRef.doc('g8FqGoLzdTlSPz5fnnoz').update(
       {
         "day": 30
       }
