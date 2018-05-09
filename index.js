@@ -60,6 +60,9 @@ var prepareReservations = {
     var day = currentDate.getDay();
     var year = currentDate.getFullYear();
 
+    console.log(mon);
+    console.log(day);
+    console.log(year);
     // database.getCollection('CIB EG').get()                            //Reading works fine.
     //   .then((snapshot) => {
     //     snapshot.forEach((doc) => {  
@@ -95,6 +98,8 @@ var prepareReservations = {
 
     timeFramesRef.get().then(function (querySnapshot) {
       querySnapshot.forEach(doc => {
+        console.log(doc.data("year"));
+
         if (doc.data("year") > year) {
           Exist = true;
 
