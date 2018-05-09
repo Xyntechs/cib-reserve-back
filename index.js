@@ -1,5 +1,3 @@
-import { error } from "util";
-
 //Requirments
 //The Cloud Functions for Firebase SDK to create Cloud Functions and setup triggers.
 //The Firebase Admin SDK to access the Firebase Realtime Database.
@@ -204,31 +202,23 @@ app.post("/returnAvailableSlots", async (req, res) => {
 
 
 
-    /* timeFramesRef.get().then(function (querySnapshot) {
-       querySnapshot.forEach(doc => {
-         timeSlotReg = doc.ref.collection('TimeSlots');
-         timeSlotReg.get().then(function (querySnapshot) {
-           querySnapshot.forEach(doc => {
-             if (doc.data()['clientId'] == clientId) {
-               console.log("User already has an appointment", registeredClient);
-               throw new error("User already has an appointment");
-             }
-           });
-         }).catch(err => {
-           console.log(err.message);
-           if (err.message == "User already has an appointment") {
-             throw new error("User already has an appointment");
-           }
-         });
-       });
-     }).catch(err => {
-       if (err.message == "User already has an appointment") {
-         return res.status(200).send("User already has an appointment");
-       }
- 
-       console.log(err.message);
-     });*/
-
+    timeFramesRef.get().then(function (querySnapshot) {
+      querySnapshot.forEach(doc => {
+        timeSlotReg = doc.ref.collection('TimeSlots');
+        timeSlotReg.get().then(function (querySnapshot) {
+          querySnapshot.forEach(doc => {
+            if (doc.data()['clientId'] == clientId) {
+              console.log("User already has an appointment", registeredClient);
+              return res.status(500).json({ error: "User already has an appointment" });
+            }
+          });
+        }).catch(err => {
+          console.log(err.message);
+        });
+      });
+    }).catch(err => {
+      console.log(err.message);
+    });
     prepareReservations.deleteAnyPastReservations(bank, branch);
   }
   catch (error) {
