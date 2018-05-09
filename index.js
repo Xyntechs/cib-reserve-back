@@ -62,11 +62,12 @@ var prepareReservations = {
 
     var timeFramesRef = database
       .getDocumentFromCollection(bank, branch)
-      .collection("TimeFrames");
+      .collection("Services");
 
-    timeFramesRef.doc('g8FqGoLzdTlSPz5fnnoz').update(
+    timeFramesRef.doc('nM7h9VziwMKujpYSy6s8').set(
       {
-        "day": 30
+        "Service Id": 123,
+        "Service ETA": 10
       }
     );
 
