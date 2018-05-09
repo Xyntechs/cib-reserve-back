@@ -83,7 +83,7 @@ var prepareReservations = {
       querySnapshot.forEach(doc => {
         if (doc.getData("year") > year) {
           Exist = true;
-          console.log("year");
+
         } else if (
           doc.getData("year") == year &&
           doc.getData("month") > month
@@ -96,6 +96,7 @@ var prepareReservations = {
         ) {
           Exist = true;
         } else {
+          console.log("Works");
           Exist = false;
         }
         if (!Exist) doc.delete();
