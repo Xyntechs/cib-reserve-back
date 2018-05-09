@@ -179,7 +179,7 @@ app.post("/returnAvailableSlots", (req, res) => {
   //recieve the bank, branch, client ID, the service, reservation day date
 
   //Is the client registered in the app?
-  registeredClients = admin.firestore.collection(Clients);
+  registeredClients = databa.getCollection(Users);
   registeredClients.get().then(function (querySnapshot) {
     if (!querySnapshot.where('email', '==', clientId).exists())
       res.status(200).send("User isn't registered");
