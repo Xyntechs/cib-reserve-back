@@ -177,27 +177,28 @@ var prepareReservations = {
 
 app.post("/returnAvailableSlots", (req, res) => {
   //recieve the bank, branch, client ID, the service, reservation day date
-  /*
-    //Is the client registered in the app?
-    registeredClients = admin.firestore.collection(Clients);
-    registeredClients.get().then(function (querySnapshot) {
-      if (!querySnapshot.where('clientId', '==', clientId).exists)
-        return;
-    }).catch(err => {
-      console.log('Error getting documents', err);
-    });
-  
-    //Is the client already has a date?
-    var branchReservations = admin.firestore.collection(bank).doc(branch).collection('Reservations');
-    branchReservations.get().then(function (querySnapshot) {
-      if (querySnapshot.where('clientId', '==', clientId).exists()) {
-        return;
-      }
-    }).catch(err => {
-      console.log('Error getting documents', err);
-    });
-  
-  */
+
+  //Is the client registered in the app?
+  registeredClients = admin.firestore.collection(Clients);
+  registeredClients.get().then(function (querySnapshot) {
+    if (!querySnapshot.where('clientId', '==', clientId).exists())
+      res.status(200).send("User isn't registered");
+    return;
+  }).catch(err => {
+    console.log('Error getting documents', err);
+  });
+  /*  
+      //Is the client already has a date?
+      var branchReservations = admin.firestore.collection(bank).doc(branch).collection('Reservations');
+      branchReservations.get().then(function (querySnapshot) {
+        if (querySnapshot.where('clientId', '==', clientId).exists()) {
+          return;
+        }
+      }).catch(err => {
+        console.log('Error getting documents', err);
+      });
+    
+    */
   var bank = req.body.bank;
   var branch = req.body.branch;
   var clientId = req.body.clientId;
