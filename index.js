@@ -8,6 +8,7 @@ const database = require("./db");
 const express = require("express");
 const app = express();
 
+const DB = database.getInstance();
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
 
@@ -60,7 +61,7 @@ var prepareReservations = {
     var day = currentDate.getDay();
     var year = currentDate.getFullYear();
 
-    var timeFramesRef = database.getInstance()
+    var timeFramesRef = DB
       .getDocumentFromCollection(bank, branch)
       .collection("Services");
 
