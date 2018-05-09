@@ -1,8 +1,7 @@
 //Requirments
 //The Cloud Functions for Firebase SDK to create Cloud Functions and setup triggers.
 //The Firebase Admin SDK to access the Firebase Realtime Database.
-// hwa da el error, good luck b2a .. en heroku by2ol can't start bsbb da 5las
-// 23ml deploy w isa el logs ht2ol eno sh8al msh error w exit process .. tmm ana bs ma5dtish baly 3amlt a 3ashan kda basal
+
 const bodyParser = require("body-parser");
 const database = require("./db");  // m
 const express = require("express");
@@ -34,10 +33,10 @@ var dayTimeSlot = {
   //the clientId field should be 0
 };
 
+
+//Data used in requests to return JSON objects to Front End
 var counter = { counterId: "", timeSlots: [] };
-
 var counters = [];
-
 var minute = { reserved: false, value: 0 };
 var dayTimeFrame = [];
 var countersDB = [];
@@ -61,40 +60,14 @@ var prepareReservations = {
     var day = currentDate.getDate();
     var year = currentDate.getFullYear();
 
-    console.log(day);
-    // database.getCollection('CIB EG').get()                            //Reading works fine.
-    //   .then((snapshot) => {
-    //     snapshot.forEach((doc) => {  
-    //       console.log(doc.id, '=>', doc.data());
-    //     });
-    //   })
-    //   .catch((err) => {
-    //     console.log('Error getting documents', err);
-    //   });
-
-
-    // var bankRef = database
-    //   .getCollection('CIB EG');
-    // console.log(bankRef.doc('10th of Ramadan'));
-
-    // bankRef.doc(' 10th of Ramadan').update(  //Just trying to set anything.
-    //   {
-    //     'Area': 'ay 7aga'// ysta enta btdeploy ela heroku ? -- nooo, da m3mol 3la 7aga tanya --8 er -- dh sha8al zy elfol t3ala awareek
-    //     //shoft?mashyv //yasta howa leh e7na msh bnady getInstance() ? fo2 5als
-    //   }//
-    // )
-    //   .catch(err => {
-    //     console.log(err.message);
-    //   });
-
-
+    //Get timeframes referrence
     var timeFramesRef = database.getDocumentFromCollection(bank, branch).collection('TimeFrames');
-
 
     var yearLookup = 'year';
     var monthLookup = 'month';
     var dayLookup = 'day';
 
+    //Find old timeframes and write a batch do delete them
     timeFramesRef.get().then(function (querySnapshot, docId) {
       var batch = database.getBatch();
       querySnapshot.forEach(doc => {
@@ -106,7 +79,6 @@ var prepareReservations = {
           !(doc.data()[yearLookup] == year &&
             doc.data()[monthLookup] == month &&
             doc.data()[dayLookup] >= day)) {
-          console.log("Works");
           batch.delete(doc.ref);
         }
       });
@@ -115,6 +87,7 @@ var prepareReservations = {
       console.log(err.message);
     });
   }
+
   /*
   //Something like singleton but on database reference to create the DayTimeFrame
   async findORCreateDayTimeFrame(date, bank, branch, service) {
