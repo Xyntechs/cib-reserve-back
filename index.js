@@ -58,7 +58,7 @@ var prepareReservations = {
     //Get current day time
     var currentDate = new Date();
     var month = currentDate.getMonth() + 1;
-    var day = currentDate.getDay();
+    var day = currentDate.getDate();
     var year = currentDate.getFullYear();
 
     console.log(day);
@@ -120,14 +120,15 @@ var prepareReservations = {
           console.log("Works");
           Exist = false;
           docId = doc.id;
+          console.log(Type(docId));
+          console.log(docId);
+
 
         }
       });
     }).catch(err => {
       console.log(err.message);
     });
-    console.log(Type(docId));
-    console.log(docId);
 
     if (!Exist) timeFramesRef.doc(docId).delete();
   }
