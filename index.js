@@ -91,6 +91,7 @@ var prepareReservations = {
 
 
     var Exist;
+    var docId;
     timeFramesRef.get().then(function (querySnapshot) {
       querySnapshot.forEach(doc => {
         if (doc.data("year") > year) {
@@ -110,13 +111,14 @@ var prepareReservations = {
         } else {
           console.log("Works");
           Exist = false;
+          docId = doc.id;
         }
-        if (!Exist) doc.delete();
-
       });
     }).catch(err => {
       console.log(err.message);
     });
+
+    if (!Exist) timeFramesRef.doc(docId).delete();
   }
   /*
   //Something like singleton but on database reference to create the DayTimeFrame
