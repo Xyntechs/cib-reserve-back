@@ -97,7 +97,7 @@ var prepareReservations = {
     var docId;
     var yearLookup = 'year';
     var monthLookup = 'month';
-    var yearLookup = 'day';
+    var dayLookup = 'day';
 
     timeFramesRef.get().then(function (querySnapshot) {
       querySnapshot.forEach(doc => {
