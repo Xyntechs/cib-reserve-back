@@ -209,16 +209,26 @@ app.post("/returnAvailableSlots", async (req, res) => {
           querySnapshot.forEach(doc => {
             if (doc.data()['clientId'] == clientId) {
               console.log("User already has an appointment", registeredClient);
-              return res.status(500).json({ error: "User already has an appointment" });
+              throw new error("User already has an appointment");
             }
           });
         }).catch(err => {
           console.log(err.message);
+          if (err.message == "User already has an appointment") {
+            throw new error("User already has an appointment");
+          }
         });
       });
     }).catch(err => {
+      if (err.message == "User already has an appointment") {
+        return res.status(200).send("User already has an appointment");
+      }
+
       console.log(err.message);
     });
+
+
+
     prepareReservations.deleteAnyPastReservations(bank, branch);
   }
   catch (error) {
