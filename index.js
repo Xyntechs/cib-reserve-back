@@ -188,7 +188,7 @@ app.post("/returnAvailableSlots", async (req, res) => {
 
     //Is the client registered in the app?
     var registeredClient = (await database.getDocumentFromCollection('Users', clientId).get());
-    if (!registeredClient.exist) {
+    if (!registeredClient.exists) {// 55555555 exist bdl exists!! :(
       console.log("User isn't registered", registeredClient);
       return res.status(500).json({ error: "User doesn't exist" }); // lw 3ayz t return , e3ml return b res
     }
