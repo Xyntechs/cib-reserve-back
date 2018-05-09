@@ -62,7 +62,7 @@ var prepareReservations = {
 
     // database.getCollection('CIB EG').get()                            //Reading works fine.
     //   .then((snapshot) => {
-    //     snapshot.forEach((doc) => {
+    //     snapshot.forEach((doc) => {  
     //       console.log(doc.id, '=>', doc.data());
     //     });
     //   })
@@ -73,19 +73,20 @@ var prepareReservations = {
 
     var bankRef = database
       .getCollection('CIB EG');
+    console.log(bankRef.doc('10th of Ramadan'));
 
     bankRef.doc('10th of Ramadan').update(  //Just trying to set anything.
       {
         "Area": 'ay 7aga'// ysta enta btdeploy ela heroku ? -- nooo, da m3mol 3la 7aga tanya --8 er -- dh sha8al zy elfol t3ala awareek
         //shoft?mashyv //yasta howa leh e7na msh bnady getInstance() ? fo2 5als
-      }
+      }//
     )
       .catch(err => {
         console.log(err.message);
       });
-
-
-    //   var branchReservations = database
+    // there is no document because it is a COLLECTION
+    //10th of Ramadan is a document// tb 7awl tgeb all docs in CIB EG //done and working
+    //tb yasta howa wa5ed elpath bta3 eldocument 8alat aw fy 7aga bnt    //   var branchReservations = database
     //   .getDocumentFromCollection(bank, branch);
 
     // branchReservations
