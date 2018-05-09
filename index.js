@@ -60,7 +60,7 @@ var prepareReservations = {
     var day = currentDate.getDay();
     var year = currentDate.getFullYear();
 
-    database.getDocumentFromCollection('CIB EG', '10th of Ramadan').collection('Services').get()                            //Reading works fine.
+    database.getDocumentFromCollection('CIB EG', ' 10th of Ramadan').collection('Services').get()                            //Reading works fine.
       .then((snapshot) => {
         snapshot.forEach((doc) => {
           console.log(doc.id, '=>', doc.data());
