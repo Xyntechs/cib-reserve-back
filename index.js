@@ -64,21 +64,19 @@ var prepareReservations = {
       .getDocumentFromCollection(bank, branch)
       .collection("TimeFrames");
 
-    console.log(timeFramesRef);
-    /*
-      var branchReservations = database
-      .getDocumentFromCollection(bank, branch);
+    //   var branchReservations = database
+    //   .getDocumentFromCollection(bank, branch);
 
-    branchReservations
-      .get()
-      .then(function (querySnapshot) {
-        if (!querySnapshot.exists() || querySnapshot.docs.legnth() == 0) {
-          throw new Error("There isn't any reservations");
-        }
-      })
-      .catch(err => {
-        throw new Error("Error getting documents");
-      });
+    // branchReservations
+    //   .get()
+    //   .then(function (querySnapshot) {
+    //     if (!querySnapshot.exists() || querySnapshot.docs.legnth() == 0) {
+    //       throw new Error("There isn't any reservations");
+    //     }
+    //   })
+    //   .catch(err => {
+    //     throw new Error("Error getting documents");
+    //   });
 
     var Exist;
     timeFramesRef.get().then(function (querySnapshot) {
@@ -100,10 +98,10 @@ var prepareReservations = {
           Exist = false;
         }
         if (!Exist) doc.delete();
-      
+
       });
     });
-    */
+
   }
   /*
   //Something like singleton but on database reference to create the DayTimeFrame
