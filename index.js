@@ -79,7 +79,11 @@ var prepareReservations = {
         "Area": 'ay 7aga'// ysta enta btdeploy ela heroku ? -- nooo, da m3mol 3la 7aga tanya --8 er -- dh sha8al zy elfol t3ala awareek
         //shoft?mashyv //yasta howa leh e7na msh bnady getInstance() ? fo2 5als
       }
-    );
+    )
+      .catch(err => {
+        console.log(err.message);
+      });
+
 
     //   var branchReservations = database
     //   .getDocumentFromCollection(bank, branch);
@@ -91,9 +95,7 @@ var prepareReservations = {
     //       throw new Error("There isn't any reservations");
     //     }
     //   })
-    //   .catch(err => {
-    //     throw new Error("Error getting documents");
-    //   });
+
 
     /*
     var Exist;
