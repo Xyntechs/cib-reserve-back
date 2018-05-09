@@ -122,6 +122,7 @@ var prepareReservations = {
           batch.delete(doc.ref);
         }
       });
+      return batch.commit();
     }).catch(err => {
       console.log(err.message);
     });
