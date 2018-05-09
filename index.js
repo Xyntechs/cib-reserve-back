@@ -71,7 +71,6 @@ var prepareReservations = {
     timeFramesRef.get().then(function (querySnapshot, docId) {
       var batch = database.getBatch();
       querySnapshot.forEach(doc => {
-        console.log(doc.data()[yearLookup]);
 
         if (!(doc.data()[yearLookup] > year) &&
           !(doc.data()[yearLookup] == year &&
@@ -174,74 +173,63 @@ var prepareReservations = {
       return counters;
     }*/
 };
+// da first, lazm t3ml el function ely bt3ml fe7a await async
+app.post("/returnAvailableSlots", async (req, res) => {
 
-app.post("/returnAvailableSlots", (req, res) => {
-  var bank = req.body.bank;
-  var branch = req.body.branch;
-  var clientId = req.body.clientId;
-  var service = req.body.service;
-
-  //recieve the bank, branch, client ID, the service, reservation day date
-
-  //Is the client registered in the app?
-  registeredClient = database.getDocumentFromCollection('Users', clientId);
-  var Exist = registeredClient.get()
-    .then((querySnap) => {
-      if (!querySnap.exist) {
-        console.log("User isn't registered");
-        return false;
-      }
-      return true;
-    })
-    .catch(err => {
-      console.log(err.message);
-    });
-
-  if (!Exist) {
-    res.status(200).send("No such user");
-    return;
-  }
-  /*  
-      //Is the client already has a date?
-      var branchReservations = admin.firestore.collection(bank).doc(branch).collection('Reservations');
-      branchReservations.get().then(function (querySnapshot) {
-        if (querySnapshot.where('clientId', '==', clientId).exists()) {
-          return;
-        }
-      }).catch(err => {
-        console.log('Error getting documents', err);
-      });
-    
-    */
-
-
-  //For testing
-  /*
-   try {
-     console.log(JSON.stringify(req.body.bank), "addMessage route");
-     res.status(200).send(req.body.bank);
-   } catch (err) {
-     res.send(err.message);
-   }
-   */
-  var resDate = new Date(req.body.date); //new date('11/7/2017');
 
   try {
+    var bank = req.body.bank;
+    var branch = req.body.branch;
+    var clientId = req.body.clientId;
+    var service = req.body.service;
+    var resDate = new Date(req.body.date); //new date('11/7/2017');
+
+    //recieve the bank, branch, client ID, the service, reservation day date
+
+    //Is the client registered in the app?
+    registeredClient = database.getDocumentFromCollection('Users', clientId);
+    var querySnap = await registeredClient.get()
+    if (!querySnap.exist) {
+      console.log("User isn't registered");
+      return res.status(500).json({ error: "User doesn't exist" }); // lw 3ayz t return , e3ml return b res
+    }
+
+
+    /*  
+        //Is the client already has a date?
+        var branchReservations = admin.firestore.collection(bank).doc(branch).collection('Reservations');
+        branchReservations.get().then(function (querySnapshot) {
+          if (querySnapshot.where('clientId', '==', clientId).exists()) {
+            return;
+          }
+        }).catch(err => {
+          console.log('Error getting documents', err);
+        });
+      
+      */
+
+
+    //For testing
+    /*
+     try {
+       console.log(JSON.stringify(req.body.bank), "addMessage route");
+       res.status(200).send(req.body.bank);
+     } catch (err) {
+       res.send(err.message);
+     }
+     */
+
+
     prepareReservations.deleteAnyPastReservations(bank, branch);
-  } catch (err) {
-    console.log(err);
-    res.send(err.message);
+  }
+  catch (error) {
+    console.log(error, " -- returnAvailableSlots route")
+    return res.status(500).json({ error: "Something went wrong, try again later" })
   }
 
   res.status(200).send("Done");
 
-  // ana harwa7 we hakaml
-  // mariam mshyt !
-  //bye bye :D @mariam
-  // bye bye, bokra b2a bs msh hnseb el back da
-  //eshta
-  //yalla salam nw :D
-  //hanrwa7 we netkalm ya se7s, slam
+
   /*
   try {
     prepareReservations.findORCreateDayTimeFrame(date, bank, branch, service);
