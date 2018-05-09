@@ -200,10 +200,12 @@ app.post("/returnAvailableSlots", async (req, res) => {
 
     timeFramesRef.forEach(doc => {
       timeSlotReg = doc.ref.collection('TimeSlots').where('clientId', '==', clientId).get();
-      if (timeSlotReg.exists) {
-        console.log("User already has an appointment", registeredClient);
-        return res.status(500).json({ error: "User already has an appointment" });
-      }
+      timeSlotReg.forEach(doc => {
+        if (doc.exists) {
+          console.log("User already has an appointment", registeredClient);
+          return res.status(500).json({ error: "User already has an appointment" });
+        }
+      });
     });
 
 
