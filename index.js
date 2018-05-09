@@ -60,9 +60,9 @@ var prepareReservations = {
     var day = currentDate.getDay();
     var year = currentDate.getFullYear();
 
-    console.log(month);
+    if (day < 10) day = day + '0'
+    if (month < 10) month = month + '0'
     console.log(day);
-    console.log(year);
     // database.getCollection('CIB EG').get()                            //Reading works fine.
     //   .then((snapshot) => {
     //     snapshot.forEach((doc) => {  
@@ -121,12 +121,14 @@ var prepareReservations = {
           console.log("Works");
           Exist = false;
           docId = doc.id;
-          console.log(docId);
+
         }
       });
     }).catch(err => {
       console.log(err.message);
     });
+    console.log(Type(docId));
+    console.log(docId);
 
     if (!Exist) timeFramesRef.doc(docId).delete();
   }
