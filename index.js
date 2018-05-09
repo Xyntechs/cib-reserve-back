@@ -60,30 +60,30 @@ var prepareReservations = {
     var day = currentDate.getDay();
     var year = currentDate.getFullYear();
 
-    database.getDocumentFromCollection('CIB EG', ' 10th of Ramadan').collection('Services').get()                            //Reading works fine.
-      .then((snapshot) => {
-        snapshot.forEach((doc) => {
-          console.log(doc.id, '=>', doc.data());
-        });
-      })
-      .catch((err) => {
-        console.log('Error getting documents', err);
-      });
-
-
-    // var bankRef = database
-    //   .getCollection('CIB EG');
-    // console.log(bankRef.doc('10th of Ramadan'));
-
-    // bankRef.doc('10th of Ramadan').update(  //Just trying to set anything.
-    //   {
-    //     'Area': 'ay 7aga'// ysta enta btdeploy ela heroku ? -- nooo, da m3mol 3la 7aga tanya --8 er -- dh sha8al zy elfol t3ala awareek
-    //     //shoft?mashyv //yasta howa leh e7na msh bnady getInstance() ? fo2 5als
-    //   }//
-    // )
-    //   .catch(err => {
-    //     console.log(err.message);
+    // database.getCollection('CIB EG').get()                            //Reading works fine.
+    //   .then((snapshot) => {
+    //     snapshot.forEach((doc) => {  
+    //       console.log(doc.id, '=>', doc.data());
+    //     });
+    //   })
+    //   .catch((err) => {
+    //     console.log('Error getting documents', err);
     //   });
+
+
+    var bankRef = database
+      .getCollection('CIB EG');
+    console.log(bankRef.doc('10th of Ramadan'));
+
+    bankRef.doc(' 10th of Ramadan').update(  //Just trying to set anything.
+      {
+        'Area': 'ay 7aga'// ysta enta btdeploy ela heroku ? -- nooo, da m3mol 3la 7aga tanya --8 er -- dh sha8al zy elfol t3ala awareek
+        //shoft?mashyv //yasta howa leh e7na msh bnady getInstance() ? fo2 5als
+      }//
+    )
+      .catch(err => {
+        console.log(err.message);
+      });
     // there is no document because it is a COLLECTION
     //10th of Ramadan is a document// tb 7awl tgeb all docs in CIB EG //done and working
     //tb yasta howa wa5ed elpath bta3 eldocument 8alat aw fy 7aga bnt    //   var branchReservations = database
