@@ -98,7 +98,7 @@ var prepareReservations = {
     var monthLookup = 'month';
     var dayLookup = 'day';
 
-    timeFramesRef.get().then(function (querySnapshot) {
+    docId = timeFramesRef.get().then(function (querySnapshot) {
       querySnapshot.forEach(doc => {
         console.log(doc.data()[yearLookup]);
 
@@ -119,12 +119,9 @@ var prepareReservations = {
         } else {
           console.log("Works");
           Exist = false;
-          docId = doc.id;
-          console.log(Type(docId));
-          console.log(docId);
-
-
+          return doc.id;
         }
+        return NULL
       });
     }).catch(err => {
       console.log(err.message);
