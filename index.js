@@ -119,7 +119,7 @@ var prepareReservations = {
       console.log(err.message);
     });
 
-    if (!Exist) timeFramesRef.doc(docId).delete();
+    if (!Exist) timeFramesRef.doc(JSON.stringify(docId)).delete();
   }
   /*
   //Something like singleton but on database reference to create the DayTimeFrame
