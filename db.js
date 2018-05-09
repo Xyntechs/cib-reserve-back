@@ -31,4 +31,7 @@ class DBConnection {
   }
 }
 
-module.exports = new DBConnection();
+module.exports = DBConnection.getInstance();
+// hwa da eúna bn export an object msh class
+//tb ma kda bawazna elsingelton xD
+//elmafrod yeshta8al bardo msh elfekra
