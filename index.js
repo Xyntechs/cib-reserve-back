@@ -188,7 +188,7 @@ app.post("/returnAvailableSlots", (req, res) => {
   registeredClient.get()
     .then((querySnap) => {
       if (!querySnap.exist) {
-        res.status(200).send("User isn't registered");
+        console.log("User isn't registered");
         return;
       }
     })
