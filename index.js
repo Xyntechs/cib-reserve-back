@@ -101,7 +101,7 @@ var prepareReservations = {
 
     timeFramesRef.get().then(function (querySnapshot) {
       querySnapshot.forEach(doc => {
-        console.log(doc.data().yearLookup);
+        console.log(doc.data()[yearLookup]);
 
         if (doc.data()[yearLookup] > year) {
           Exist = true;
