@@ -60,30 +60,27 @@ var prepareReservations = {
     var day = currentDate.getDay();
     var year = currentDate.getFullYear();
 
-    database.getCollection('CIB EG').get()
-      .then((snapshot) => {
-        snapshot.forEach((doc) => {
-          console.log(doc.id, '=>', doc.data());
-        });
-      })
-      .catch((err) => {
-        console.log('Error getting documents', err);
-      });
+    // database.getCollection('CIB EG').get()                            //Reading works fine.
+    //   .then((snapshot) => {
+    //     snapshot.forEach((doc) => {
+    //       console.log(doc.id, '=>', doc.data());
+    //     });
+    //   })
+    //   .catch((err) => {
+    //     console.log('Error getting documents', err);
+    //   });
 
-    /*
+
     var servicesRef = database
-      .getDocumentFromCollection(bank, branch)
-      .collection("Services");
+      .getCollection('CIB EG');
 
-    servicesRef.doc('nM7h9VziwMKujpYSy6s8').set(  //Just trying to set anything.
+    bankRef.doc('10th of Ramadan').update(  //Just trying to set anything.
       {
-
-        "Service ETA": 10,
-        "Service Id": '123'// ysta enta btdeploy ela heroku ? -- nooo, da m3mol 3la 7aga tanya --8 er -- dh sha8al zy elfol t3ala awareek
-//shoft?mashyv //yasta howa leh e7na msh bnady getInstance() ? fo2 5als
+        "Area": 'ay 7aga'// ysta enta btdeploy ela heroku ? -- nooo, da m3mol 3la 7aga tanya --8 er -- dh sha8al zy elfol t3ala awareek
+        //shoft?mashyv //yasta howa leh e7na msh bnady getInstance() ? fo2 5als
       }
     );
-*/
+
     //   var branchReservations = database
     //   .getDocumentFromCollection(bank, branch);
 
