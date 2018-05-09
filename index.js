@@ -95,23 +95,26 @@ var prepareReservations = {
 
     var Exist;
     var docId;
+    var yearLookup = 'year';
+    var monthLookup = 'month';
+    var yearLookup = 'day';
 
     timeFramesRef.get().then(function (querySnapshot) {
       querySnapshot.forEach(doc => {
-        console.log(doc.data("year"));
+        console.log(doc.data().yearLookup);
 
-        if (doc.data("year") > year) {
+        if (doc.data().yearLookup > year) {
           Exist = true;
 
         } else if (
-          doc.data("year") == year &&
-          doc.data("month") > month
+          doc.data().yearLookup == year &&
+          doc.data().monthLookup > month
         ) {
           Exist = true;
         } else if (
-          doc.data("year") == year &&
-          doc.data("month") == month &&
-          doc.data("day") >= day
+          doc.data().yearLookup == year &&
+          doc.data().monthLookup == month &&
+          doc.data().dayLookup >= day
         ) {
           Exist = true;
         } else {
