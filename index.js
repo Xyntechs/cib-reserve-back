@@ -199,7 +199,7 @@ app.post("/returnAvailableSlots", async (req, res) => {
     var timeFramesRef = await database.getDocumentFromCollection(bank, branch).collection('TimeFrames').get();
 
     timeFramesRef.forEach(doc => {
-      timeSlotReg = doc.collection('TimeSlots').where('clientId', '==', clientId).get();
+      timeSlotReg = doc.ref.collection('TimeSlots').where('clientId', '==', clientId).get();
       if (timeSlotReg.exists) {
         console.log("User already has an appointment", registeredClient);
         return res.status(500).json({ error: "User already has an appointment" });
