@@ -99,7 +99,7 @@ var prepareReservations = {
     var dayLookup = 'day';
 
     timeFramesRef.get().then(function (querySnapshot, docId) {
-      querySnapshot.forEach(doc, docId => {
+      querySnapshot.forEach(doc => {
         console.log(doc.data()[yearLookup]);
 
         if (doc.data()[yearLookup] > year) {
