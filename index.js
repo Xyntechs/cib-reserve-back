@@ -187,14 +187,17 @@ app.post("/returnAvailableSlots", async (req, res) => {
     //recieve the bank, branch, client ID, the service, reservation day date
 
     //Is the client registered in the app?
-    registeredClient = database.getDocumentFromCollection('Users', clientId);
-    var querySnap = await registeredClient.get()
-    if (!querySnap.exist) {
-      console.log("User isn't registered");
+    var registeredClient = (await database.getDocumentFromCollection('Users', clientId).get());
+    if (!registeredClient.exist) {
+      console.log("User isn't registered", registeredClient);
       return res.status(500).json({ error: "User doesn't exist" }); // lw 3ayz t return , e3ml return b res
     }
+    // enta 2a3d !
+    //sorry hashta8al ahuh 7alan
 
-
+    // knt bt2ol a b2a
+    //7atta lw eluser registered byraga3ly elerror
+    // h2olk leh, 3shan enta btsearch b client id, da ely hwa a ?
     /*  
         //Is the client already has a date?
         var branchReservations = admin.firestore.collection(bank).doc(branch).collection('Reservations');
@@ -229,7 +232,7 @@ app.post("/returnAvailableSlots", async (req, res) => {
 
   res.status(200).send("Done");
 
-
+  // xD xD, 7a 3mlt a 
   /*
   try {
     prepareReservations.findORCreateDayTimeFrame(date, bank, branch, service);
