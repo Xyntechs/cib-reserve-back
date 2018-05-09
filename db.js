@@ -1,5 +1,7 @@
 const Firebase = require("./firebase");
 
+
+
 class DBConnection {
   constructor() {
     this._firestore = Firebase.getFireStore();

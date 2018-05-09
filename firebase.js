@@ -1,4 +1,5 @@
 const admin = require("firebase-admin");
+const functions = require('firebase-functions');
 
 admin.initializeApp({
   credential: admin.credential.cert(
@@ -7,7 +8,7 @@ admin.initializeApp({
 });
 
 class Firebase {
-  constructor() {}
+  constructor() { }
 
   static getInstance() {
     if (!this._instance) this._instance = new Firebase();
