@@ -66,7 +66,7 @@ var prepareReservations = {
 
     timeFramesRef.doc().update(
       {
-        "day": "30"
+        "day": 30
       }
     );
 
