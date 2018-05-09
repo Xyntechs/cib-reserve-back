@@ -60,7 +60,7 @@ var prepareReservations = {
     var day = currentDate.getDay();
     var year = currentDate.getFullYear();
 
-    database.collection('CIB EG').get()
+    database.getCollection('CIB EG').get()
       .then((snapshot) => {
         snapshot.forEach((doc) => {
           console.log(doc.id, '=>', doc.data());
