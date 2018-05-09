@@ -56,11 +56,11 @@ var prepareReservations = {
   deleteAnyPastReservations(bank, branch) {
     //Get current day time
     var currentDate = new Date();
-    var mon = currentDate.getMonth();
+    var month = currentDate.getMonth();
     var day = currentDate.getDay();
     var year = currentDate.getFullYear();
 
-    console.log(mon);
+    console.log(month);
     console.log(day);
     console.log(year);
     // database.getCollection('CIB EG').get()                            //Reading works fine.
