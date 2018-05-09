@@ -202,15 +202,16 @@ app.post("/returnAvailableSlots", async (req, res) => {
 
 
 
-    timeFramesRef.get().then(function (querySnapshot, docId) {
-      var batch = database.getBatch();
+    timeFramesRef.get().then(function (querySnapshot) {
       querySnapshot.forEach(doc => {
-        timeSlotReg = doc.ref.collection('TimeSlots').get();
-        timeSlotReg.forEach(doc => {
-          if (doc.data()['clientId'] == clientId) {
-            console.log("User already has an appointment", registeredClient);
-            return res.status(500).json({ error: "User already has an appointment" });
-          }
+        timeSlotReg = doc.ref.collection('TimeSlots');
+        timeSlotReg.get().then(function (querySnapshot) {
+          querySnapshot.forEach(doc => {
+            if (doc.data()['clientId'] == clientId) {
+              console.log("User already has an appointment", registeredClient);
+              return res.status(500).json({ error: "User already has an appointment" });
+            }
+          });
         });
       });
     });
