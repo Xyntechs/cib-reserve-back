@@ -197,7 +197,6 @@ app.post("/returnAvailableSlots", async (req, res) => {
     //Is the client already has a date?
     // no need for await bos 3la el return kda ely hwa b3d : // tmam fhemt
     var timeFramesRef = await database.getDocumentFromCollection(bank, branch).collection('TimeFrames').get();
-
     timeFramesRef.forEach(doc => {
       timeSlotReg = doc.ref.collection('TimeSlots').get();
       timeSlotReg.forEach(doc => {
