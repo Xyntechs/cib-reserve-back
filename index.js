@@ -208,13 +208,14 @@ app.post("/returnAvailableSlots", async (req, res) => {
           timeSlotReg.get().then((querySnapShot) => {
             querySnapShot.forEach(doc => {
               if (doc.data()['clientId'] == clientId) {
-                console.log("User already has an appointment", UserApp)
+                console.log("User already has an appointment", doc)
                 found = true;
               }
             });
           });
         });
       }).then((data) => {
+        console.log("we are here", found);
         if (found)
           return res.status(500).json({ error: "User already has an appointment" });
       }).catch(err => {
