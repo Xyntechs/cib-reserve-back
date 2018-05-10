@@ -210,11 +210,13 @@ app.post("/returnAvailableSlots", async (req, res) => {
               if (doc.data()['clientId'] == clientId) {
                 console.log("User already has an appointment", doc)
                 found = true;
+                return true;
               }
             });
           });
         });
       }).then((data) => {
+        console.log(data);
         console.log("we are here", found);
         if (found)
           return res.status(500).json({ error: "User already has an appointment" });
