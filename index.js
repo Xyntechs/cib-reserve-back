@@ -217,7 +217,7 @@ app.post("/returnAvailableSlots", async (req, res) => {
         console.log(error.message);
       }
     });
-    if (finish)
+    if (true)
       return res.status(500).json({ error: "User already has an appointment" });
 
 
