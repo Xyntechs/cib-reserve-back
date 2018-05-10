@@ -48,8 +48,8 @@ for(i =1; i<(numOfSlots); i++)
 timSlotIndex.min = i;
 timeFrameIndex.push(timeSlotIndex);
 }
-
 */
+
 
 var prepareReservations = {
   //This function is to delete any past reservations from the database
@@ -195,41 +195,27 @@ app.post("/returnAvailableSlots", async (req, res) => {
 
 
     //Is the client already has a date?
-    // no need for await bos 3la el return kda ely hwa b3d : // tmam fhemt
     //Get timeframes referrence
-    var timeFramesRef = database.getDocumentFromCollection(bank, branch).collection('TimeFrames');
-
-
-
-
-    timeFramesRef.get().then(function (querySnapshot) {
-      querySnapshot.forEach(doc => {
-        timeSlotReg = doc.ref.collection('TimeSlots');
-        timeSlotReg.get().then(function (querySnapshot) {
-          querySnapshot.forEach(doc => {
-            if (doc.data()['clientId'] == clientId) {
-              console.log("User already has an appointment", registeredClient);
-              throw new error("User already has an appointment");
-            }
-          });
-        }).catch(err => {
-          console.log(err.message);
-          if (err.message == "User already has an appointment") {
-            throw new error("User already has an appointment");
+    var timeFramesRef = await database.getDocumentFromCollection(bank, branch).collection('TimeFrames').get();
+    timeFramesRef.forEach(doc => {
+      timeSlotReg = doc.ref.collection('TimeSlots');
+      var UserApp = timeSlotReg.get().then(function (querySnapshot) {
+        querySnapshot.forEach(doc => {
+          if (doc.data()['clientId'] == clientId) {
+            console.log("User already has an appointment", registeredClient);
+            return res.status(200).send("User already has an appointment");
           }
+          return "pass"
         });
+
+        if (UserApp != "pass") {
+          return UserApp;
+        }
+      }).catch(err => {
+        console.log(err.message);
       });
-    }).catch(err => {
-      if (err.message == "User already has an appointment") {
-        return res.status(200).send("User already has an appointment");
-      }
-
-      console.log(err.message);
+      prepareReservations.deleteAnyPastReservations(bank, branch);
     });
-
-
-
-    prepareReservations.deleteAnyPastReservations(bank, branch);
   }
   catch (error) {
     console.log(error, " -- returnAvailableSlots route")
@@ -237,7 +223,6 @@ app.post("/returnAvailableSlots", async (req, res) => {
   }
 
   res.status(200).send("Done");
-
 
   /*
   try {
