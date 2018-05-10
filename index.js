@@ -197,21 +197,28 @@ app.post("/returnAvailableSlots", async (req, res) => {
     //Is the client already has a date?
     //Get timeframes referrence
     var timeFramesRef = await database.getDocumentFromCollection(bank, branch).collection('TimeFrames').get();
-    timeFramesRef.forEach(async doc => {
-      timeSlotReg = doc.ref.collection('TimeSlots');
-      var UserApp = await timeSlotReg.get();
-      UserApp.forEach(doc => {
-        if (doc.data()['clientId'] == clientId) {
-          console.log("User already has an appointment", registeredClient);
-          return res.status(200).send("User already has an appointment");
-        }
-        return "pass"
-      });
 
-      if (UserApp != "pass") {
-        return UserApp;
-      }
-    });
+    try {
+      timeFramesRef.forEach(async doc => {
+        timeSlotReg = doc.ref.collection('TimeSlots');
+        var UserApp = await timeSlotReg.get();
+        UserApp.forEach(doc => {
+          if (doc.data()['clientId'] == clientId) {
+            console.log("User already has an appointment", registeredClient);
+            return res.status(200).send("User already has an appointment");
+          }
+          return "pass"
+        });
+
+        if (UserApp != "pass") {
+          return UserApp;
+        }
+      });
+    }
+    catch (error) {
+      console.log(error, " -- returnAvailableSlots route")
+      return res.status(500).json({ error: "Something went wrong, try again later" })
+    }
     prepareReservations.deleteAnyPastReservations(bank, branch);
   }
   catch (error) {
