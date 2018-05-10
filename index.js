@@ -207,9 +207,7 @@ app.post("/returnAvailableSlots", async (req, res) => {
 
         UserApp.forEach(doc => {
           if (doc.data()['clientId'] == clientId) {
-            console.log("User already has an appointment", registeredClient);
-            setTimeout(callback, 5000);
-            callback();
+            console.log("User already has an appointment", registeredClient)
           }
         });
       }
@@ -217,9 +215,6 @@ app.post("/returnAvailableSlots", async (req, res) => {
         console.log(error.message);
       }
     });
-    function callback() {
-      return res.status(500).json({ error: "User already has an appointment" })
-    }
 
 
     prepareReservations.deleteAnyPastReservations(bank, branch);
@@ -242,6 +237,7 @@ app.post("/returnAvailableSlots", async (req, res) => {
 
   //res.status(200).send(counters);
 });
+
 
 const listener = app.listen(process.env.PORT || 5000, function () {
   console.log("Listening on port " + listener.address().port); //Listening
