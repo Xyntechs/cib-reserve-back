@@ -200,7 +200,7 @@ app.post("/returnAvailableSlots", async (req, res) => {
     //Is the client already has a date?
     //Get timeframes referrence
     var timeFramesRef = await database.getDocumentFromCollection(bank, branch).collection('TimeFrames').get();
-    timeFramesRef.forEach(async doc => {
+    timeFramesRef.forEach(doc => {
       timeSlotReg = doc.ref.collection('TimeSlots');
       var UserApp = await timeSlotReg.get();
       try {
