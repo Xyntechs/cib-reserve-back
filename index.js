@@ -211,8 +211,6 @@ app.post("/returnAvailableSlots", async (req, res) => {
       if (UserApp != "pass") {
         return UserApp;
       }
-    }).catch(err => {
-      console.log(err.message);
     });
     prepareReservations.deleteAnyPastReservations(bank, branch);
   }
