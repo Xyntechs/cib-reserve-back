@@ -208,8 +208,10 @@ app.post("/returnAvailableSlots", async (req, res) => {
         UserApp.forEach(doc => {
           if (doc.data()['clientId'] == clientId) {
             console.log("User already has an appointment", registeredClient)
+            return "User already has an appointment"
           }
         });
+        console.log(UserApp);
       }
       catch (error) {
         console.log(error.message);
