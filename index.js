@@ -205,15 +205,16 @@ app.post("/returnAvailableSlots", async (req, res) => {
         UserApp.forEach(doc => {
           if (doc.data()['clientId'] == clientId) {
             console.log("User already has an appointment", registeredClient);
-            throw "User already has an appointment";
+            throw new error("User already has an appointment");
           }
         });
       }
       catch (error) {
-        if (error == "User already has an appointment") {
+        if (error.message == "User already has an appointment") {
           return res.status(500).json({ error: "User already has an appointment" })
         }
-        console.log(error);
+        return res.status(500).json({ error: "User already has an appointment" })
+        console.log(error.message);
       }
     });
     prepareReservations.deleteAnyPastReservations(bank, branch);
