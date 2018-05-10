@@ -199,23 +199,22 @@ app.post("/returnAvailableSlots", async (req, res) => {
     var timeFramesRef = await database.getDocumentFromCollection(bank, branch).collection('TimeFrames').get();
     timeFramesRef.forEach(doc => {
       timeSlotReg = doc.ref.collection('TimeSlots');
-      var UserApp = timeSlotReg.get().then(function (querySnapshot) {
-        querySnapshot.forEach(doc => {
-          if (doc.data()['clientId'] == clientId) {
-            console.log("User already has an appointment", registeredClient);
-            return res.status(200).send("User already has an appointment");
-          }
-          return "pass"
-        });
-
-        if (UserApp != "pass") {
-          return UserApp;
+      var UserApp = await timeSlotReg.get();
+      UserApp.forEach(doc => {
+        if (doc.data()['clientId'] == clientId) {
+          console.log("User already has an appointment", registeredClient);
+          return res.status(200).send("User already has an appointment");
         }
-      }).catch(err => {
-        console.log(err.message);
+        return "pass"
       });
-      prepareReservations.deleteAnyPastReservations(bank, branch);
+
+      if (UserApp != "pass") {
+        return UserApp;
+      }
+    }).catch(err => {
+      console.log(err.message);
     });
+    prepareReservations.deleteAnyPastReservations(bank, branch);
   }
   catch (error) {
     console.log(error, " -- returnAvailableSlots route")
