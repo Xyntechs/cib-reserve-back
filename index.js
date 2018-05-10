@@ -7,6 +7,8 @@ const database = require("./db");  // m
 const express = require("express");
 const app = express();
 var Type = require('type-of-is')
+let found;
+
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -200,7 +202,7 @@ app.post("/returnAvailableSlots", async (req, res) => {
     //Is the client already has a date?
     //Get timeframes referrence
     const timeFramesRef = await database.getDocumentFromCollection(bank, branch).collection('TimeFrames').get();
-    let found;
+
     const finish = await timeFramesRef.forEach(async doc => {
       timeSlotReg = doc.ref.collection('TimeSlots');
       const UserApp = await timeSlotReg.get();
