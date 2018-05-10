@@ -200,24 +200,23 @@ app.post("/returnAvailableSlots", async (req, res) => {
     //Is the client already has a date?
     //Get timeframes referrence
     const timeFramesRef = await database.getDocumentFromCollection(bank, branch).collection('TimeFrames').get();
-    const finish = await timeFramesRef.forEach(async doc => {
+    let found;
+    timeFramesRef.forEach(async doc => {
       timeSlotReg = doc.ref.collection('TimeSlots');
       const UserApp = await timeSlotReg.get();
       try {
-        const found = await UserApp.forEach(doc => {
+        UserApp.forEach(doc => {
           if (doc.data()['clientId'] == clientId) {
             console.log("User already has an appointment", UserApp)
-            return true;
+            found = true;
           }
         });
-        if (found)
-          return true;
       }
       catch (error) {
         console.log(error.message);
       }
     });
-    if (true)
+    if (found)
       return res.status(500).json({ error: "User already has an appointment" });
 
 
