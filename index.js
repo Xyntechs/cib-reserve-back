@@ -205,12 +205,15 @@ app.post("/returnAvailableSlots", async (req, res) => {
       var UserApp = await timeSlotReg.get();
       try {
 
-        UserApp.forEach(doc => {
+        var Found = UserApp.forEach(async doc => {
           if (doc.data()['clientId'] == clientId) {
             console.log("User already has an appointment", UserApp)
-            return "User already has an appointment"
+            return true;
           }
         });
+
+        if (Found)
+          return res.status(500).json({ error: "User already has an appointment" });
 
       }
       catch (error) {
