@@ -32,19 +32,10 @@ app.post("/addMessage", async (req, res) => {
   }
 });
 
-var dayTimeSlot = {
-  start: "",
-  end: ""
-  //if the Time Slot is not registered initially or set free by the user
-  //the clientId field should be 0
-};
 
 
 //Data used in requests to return JSON objects to Front End
 var counter = { counterId: "", timeSlots: [] };
-var counters = [];
-
-
 
 
 
@@ -88,6 +79,7 @@ var prepareReservations = {
 
   //Something like singleton but on database reference to create the DayTimeFrame
   async findORCreateDayTimeFrame(res, resDate, bank, branch, service) {
+    var counters = [];
 
     var timeFramesRef = database.getDocumentFromCollection(bank, branch).collection('TimeFrames');
     var day, month, year;
@@ -102,41 +94,37 @@ var prepareReservations = {
 
     var countersRef = await database.getDocumentFromCollection(bank, branch).collection('Counters').get()
 
-    var done = await countersRef.forEach(async counterSnap => {
-      console.log(day);
-      console.log(month);
-      console.log(year);
-
-      var timeFrameOnDate = timeFramesRef.where('day', '==', day).where('month', '==', month).where('year', '==', year)
+    for (let counterSnap of countersRef.docs) {
+      var timeFrameOnDate = await timeFramesRef.where('day', '==', day).where('month', '==', month).where('year', '==', year).get()
       if (timeFrameOnDate.empty) {
         return this.createDayTimeFrame(res, service, day, month, year);
-      }
-      else {
+      } else {
         counter.counterId = counterSnap.id;
         console.log(counterSnap.id);
         try {
-          counter.timeSlots = await this.findCounterTimeSlots(bank, branch, timeFrameOnDate, service);
+          var counterTimeSlots = await this.findCounterTimeSlots(bank, branch, timeFrameOnDate, service, counterSnap.id);
           console.log(counter.timeSlots);
-          counters.push(counter);
+          counters.push({ 'counterId': counterSnap.id, 'timeSlots': counterTimeSlots });
         }
         catch (error) {
           console.log(error, " -- returnAvailableSlots route")
           return res.status(500).json({ error: "Something went wrong, try again later" })
         }
       }
-    })
-    return res.status(200).json(counters)
+    }
 
+    return res.status(200).json(counters)
   },
 
-  async findCounterTimeSlots(bank, branch, timeFrameOnDate, service) {
+  async findCounterTimeSlots(bank, branch, timeFramesOnDateSnap, service, counterId) {
     var timeSlots = [];
     var timeSlot = { 'start': '', 'end': '' };
 
     var branchReference = database.getDocumentFromCollection(bank, branch);
-    var timeFrameOnDateSnap = await timeFrameOnDate.get();
-    var done = await timeFrameOnDateSnap.forEach(async timeFrameOnDateSnap => {
-      var timeSlotsSnap = await timeFrameOnDateSnap.ref.collection('TimeSlots').get()
+
+
+    for (let timeFrameOnDateSnap of timeFramesOnDateSnap.docs) {
+      var timeSlotsSnap = await timeFrameOnDateSnap.ref.collection('TimeSlots').where('counterId', '==', counterId).get()
       //Get working hours
       var workHrs;
       var doc = await branchReference.get();
@@ -145,13 +133,13 @@ var prepareReservations = {
       var startMins = parseInt(workHrs[0].split(':')[1]);
       var endHrs = parseInt(workHrs[1].split(':')[0]);
       var endMins = parseInt(workHrs[1].split(':')[1]);
-      var numOfMins = ((endHrs - startHrs) * 60 + (endMins - startMins));
+      var numOfMins = endHrs * 60 + endMins;
 
 
-      var serviceSnap = await branchReference.collection('Services').where('Service Id', '==', service).get();
+      var serviceSnap = await database.getCollection('Services').where('Service Name', '==', service).get();
       for (let serviceSnapShot of serviceSnap.docs) {
         var serviceETA = parseInt(serviceSnapShot.data()['Service ETA']);
-        for (var min = startMins + 60 * startHrs; min < numOfMins; min++) {
+        for (var min = startMins + 60 * startHrs; min < (numOfMins - serviceETA); min++) {
           var start = min;
           var end = start + serviceETA;
           var consistent = true;
@@ -163,18 +151,22 @@ var prepareReservations = {
           }
 
           if (consistent) {
-            var stringStartHrs = String(Math.floor(start / 60));
-            var stringStartMins = String(start % 60);
-            var stringEndHrs = String(Math.floor(end / 60));
-            var stringEndMins = String(end % 60);
-            timeSlot['start'] = stringStartHrs + ":" + stringStartMins;
-            timeSlot['end'] = stringEndHrs + ":" + stringEndMins;
-            timeSlots.push(timeSlot);
+            var stringStartHrs = (Math.floor(start / 60) < 10) ? `0${String(Math.floor(start / 60))}` : Math.floor(start / 60);
+            var stringStartMins = (start % 60 < 10) ? `0${String(start % 60)}` : String(start % 60);
+            var stringEndHrs = (Math.floor(end / 60) < 10) ? `0${String(Math.floor(end / 60))}` : String(Math.floor(end / 60));
+            var stringEndMins = (end % 60 < 10) ? `0${String(end % 60)}` : String(end % 60);
+
+            timeSlots.push({
+              start: stringStartHrs + ":" + stringStartMins,
+              end: stringEndHrs + ":" + stringEndMins
+            });
+
             min = end + 1;
           }
         }
       }
-    })
+    }
+
 
     return timeSlots;
   },
@@ -315,8 +307,10 @@ app.post("/returnAvailableSlots", async (req, res) => {
     });
     if (found)
       return res.status(500).json({ error: "User already has an appointment" });
+
     prepareReservations.deleteAnyPastReservations(bank, branch);
     var finished = await prepareReservations.findORCreateDayTimeFrame(res, resDate.toDate(), bank, branch, service)
+
     return finished;
   }
   catch (error) {
