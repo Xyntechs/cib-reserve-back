@@ -139,7 +139,7 @@ var prepareReservations = {
       //Get working hours
       var workHrs;
       var doc = await branchReference.get();
-      workHrs = doc.Data().get('Working Hours').split('-'); //start: workHrs[0], end: workHrs[1]
+      workHrs = doc.data()['Working Hours'].split('-'); //start: workHrs[0], end: workHrs[1]
       var startHrs = parseInt(workHrs[0].split(':')[0]);
       var startMins = parseInt(workHrs[0].split(':')[1]);
       var endHrs = parseInt(workHrs[1].split(':')[0]);
