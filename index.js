@@ -99,32 +99,32 @@ var prepareReservations = {
 
       })
       .then(data => {
-        database.getDocumentFromCollection(bank, branch).collection('Counters').get()
-          .then(countersRef => {
-            countersRef.forEach(async counterSnap => {
-              var timeFrameOnDate = timeFramesRef.where('day', '==', day).where('month', '==', month).where('year', '==', year)
-              if (timeFrameOnDate.empty) {
-                return this.createDayTimeFrame(res, service, day, month, year);
-              }
-              else {
-                counter.counterId = counterSnap.id;
-                try {
-                  counter.timeSlots = await this.findCounterTimeSlots(bank, branch, timeFrameOnDate, service);
-                  counters.push(counter);
-                }
-                catch (error) {
-                  console.log(error, " -- returnAvailableSlots route")
-                  return res.status(500).json({ error: "Something went wrong, try again later" })
-                }
-              }
-            })
-          }).then(data => {
-            return res.status(200).json(counters)
-          }).catch(error => {
-            console.log(error.message);
-          });
-      })
-  },
+        countersRef = await database.getDocumentFromCollection(bank, branch).collection('Counters').get();
+
+        var done = await countersRef.forEach(async counterSnap => {
+          var timeFrameOnDate = timeFramesRef.where('day', '==', day).where('month', '==', month).where('year', '==', year)
+          if (timeFrameOnDate.empty) {
+            return this.createDayTimeFrame(res, service, day, month, year);
+          }
+          else {
+            counter.counterId = counterSnap.id;
+            try {
+              counter.timeSlots = await this.findCounterTimeSlots(bank, branch, timeFrameOnDate, service);
+              counters.push(counter);
+            }
+            catch (error) {
+              console.log(error, " -- returnAvailableSlots route")
+              return res.status(500).json({ error: "Something went wrong, try again later" })
+            }
+          }
+        })
+      }).then(data => {
+        return res.status(200).json(counters)
+      }).catch(error => {
+        console.log(error.message);
+      });
+  })
+},
 
   findCounterTimeSlots(bank, branch, timeFrameOnDate, service) {
     var timeSlots = [];
@@ -193,31 +193,31 @@ var prepareReservations = {
       });
   },
 
-  createDayTimeFrame(res, serviceCounters, day, month, year) {
+    createDayTimeFrame(res, serviceCounters, day, month, year) {
 
 
 
-  },
+},
 
-  isConsistent(objectStart, objectEnd, subjectStart, subjectEnd) { //returns if the object time slot is consistent to exist with the subject time slot.
+isConsistent(objectStart, objectEnd, subjectStart, subjectEnd) { //returns if the object time slot is consistent to exist with the subject time slot.
 
-    var subjectStartHrs = parseInt(subjectStart.split(':')[0]);
-    var subjectStartMins = parseInt(subjectStart.split(':')[1]);
+  var subjectStartHrs = parseInt(subjectStart.split(':')[0]);
+  var subjectStartMins = parseInt(subjectStart.split(':')[1]);
 
-    var subjectEndHrs = parseInt(subjectEnd.split(':')[0]);
-    var subjectEndMins = parseInt(subjectEnd.split(':')[1]);
+  var subjectEndHrs = parseInt(subjectEnd.split(':')[0]);
+  var subjectEndMins = parseInt(subjectEnd.split(':')[1]);
 
-    var subjectSt = subjectStartMins + 60 * subjectStartHrs;
-    var subjectEn = subjectEndMins + 60 * subjectEndHrs;
+  var subjectSt = subjectStartMins + 60 * subjectStartHrs;
+  var subjectEn = subjectEndMins + 60 * subjectEndHrs;
 
-    if ((objectStart > subjectSt && objectStart < subjectEn)
-      || (objectEnd > subjectSt && objectEnd < subjectEn)
-      || (objectStart <= subjectSt && objectEnd >= subjectEn))
-      return false;
-    else
-      return true;
+  if ((objectStart > subjectSt && objectStart < subjectEn)
+    || (objectEnd > subjectSt && objectEnd < subjectEn)
+    || (objectStart <= subjectSt && objectEnd >= subjectEn))
+    return false;
+  else
+    return true;
 
-  }
+}
 
 
   /*
