@@ -105,7 +105,7 @@ var prepareReservations = {
     countersRef.forEach(counter => {
       counter.ref.collection('Services').where('Service Name', '==', service).get()
         .then(serviceCounters => {
-          if (serviceCounters.empty())
+          if (serviceCounters.empty)
             throw new Error("This service is not supported currently");
 
         }).catch(error => {
