@@ -93,12 +93,12 @@ var prepareReservations = {
 
 
   //Something like singleton but on database reference to create the DayTimeFrame
-  async findORCreateDayTimeFrame(date, bank, branch, service) {
+  async findORCreateDayTimeFrame(resDate, bank, branch, service) {
     var timeFramesRef = database.getDocumentFromCollection(bank, branch).collection('TimeFrames');
     var day, month, year;
-    day = date.getDay();
-    month = date.getMonth();
-    year = date.getFullYear();
+    day = resDate.getDay();
+    month = resDate.getMonth();
+    year = resDate.getFullYear();
     let serviceFound = false;
     let serviceCounters;
     var countersRef = await database.getDocumentFromCollection(bank, branch).collection('Counters').get();
@@ -241,7 +241,7 @@ app.post("/returnAvailableSlots", async (req, res) => {
               return res.status(500).json({ error: "User already has an appointment" });
             prepareReservations.deleteAnyPastReservations(bank, branch);
           }).then(data => {
-            prepareReservations.findORCreateDayTimeFrame(date, bank, branch, service)
+            prepareReservations.findORCreateDayTimeFrame(resDate, bank, branch, service)
               .then(data => {
                 return res.status(200).json(Counters);
               });
