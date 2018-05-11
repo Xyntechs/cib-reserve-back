@@ -251,7 +251,7 @@ app.post("/returnAvailableSlots", async (req, res) => {
               return res.status(500).json({ error: "User already has an appointment" });
             prepareReservations.deleteAnyPastReservations(bank, branch);
           }).then(data => {
-            prepareReservations.findORCreateDayTimeFrame(resDate, bank, branch, service)
+            await prepareReservations.findORCreateDayTimeFrame(resDate, bank, branch, service)
             /*.then(data => {
               return res.status(200).json(Counters);
             });*/
