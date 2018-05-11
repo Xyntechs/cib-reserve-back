@@ -218,6 +218,9 @@ app.post("/returnAvailableSlots", async (req, res) => {
             console.log(found);
             if (found)
               return res.status(500).json({ error: "User already has an appointment" });
+          }).then(data => {
+            prepareReservations.deleteAnyPastReservations(bank, branch);
+            return res.status(200).send("Done");
           });
         });
       });
@@ -227,7 +230,7 @@ app.post("/returnAvailableSlots", async (req, res) => {
 
 
 
-    prepareReservations.deleteAnyPastReservations(bank, branch);
+
   }
   catch (error) {
     console.log(error, " -- returnAvailableSlots route")
