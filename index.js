@@ -97,13 +97,18 @@ var prepareReservations = {
     for (let counterSnap of countersRef.docs) {
       var timeFrameOnDate = await timeFramesRef.where('day', '==', day).where('month', '==', month).where('year', '==', year).get()
       if (timeFrameOnDate.empty) {
-        return this.createDayTimeFrame(res, service, day, month, year);
+        try {
+          var createdTimeSlots = await this.createDayTimeFrame(bank, branch, service);
+          counters.push({ 'counterId': counterSnap.id, 'timeSlots': createdTimeSlots });
+        }
+        catch (error) {
+          console.log(error, " -- returnAvailableSlots route")
+          return res.status(500).json({ error: "Something went wrong, try again later" })
+        }
+
       } else {
-        counter.counterId = counterSnap.id;
-        console.log(counterSnap.id);
         try {
           var counterTimeSlots = await this.findCounterTimeSlots(bank, branch, timeFrameOnDate, service, counterSnap.id);
-          console.log(counter.timeSlots);
           counters.push({ 'counterId': counterSnap.id, 'timeSlots': counterTimeSlots });
         }
         catch (error) {
@@ -118,7 +123,6 @@ var prepareReservations = {
 
   async findCounterTimeSlots(bank, branch, timeFramesOnDateSnap, service, counterId) {
     var timeSlots = [];
-    var timeSlot = { 'start': '', 'end': '' };
 
     var branchReference = database.getDocumentFromCollection(bank, branch);
 
@@ -171,9 +175,43 @@ var prepareReservations = {
     return timeSlots;
   },
 
-  createDayTimeFrame(res, serviceCounters, day, month, year) {
+  async createDayTimeFrame(bank, branch, service) {
+    var timeSlots = [];
+
+    var branchReference = database.getDocumentFromCollection(bank, branch);
+
+    //Get working hours
+    var workHrs;
+    var doc = await branchReference.get();
+    workHrs = doc.data()['Working Hours'].split('-'); //start: workHrs[0], end: workHrs[1]
+    var startHrs = parseInt(workHrs[0].split(':')[0]);
+    var startMins = parseInt(workHrs[0].split(':')[1]);
+    var endHrs = parseInt(workHrs[1].split(':')[0]);
+    var endMins = parseInt(workHrs[1].split(':')[1]);
+    var numOfMins = endHrs * 60 + endMins;
 
 
+    var serviceSnap = await database.getCollection('Services').where('Service Name', '==', service).get();
+    for (let serviceSnapShot of serviceSnap.docs) {
+      var serviceETA = parseInt(serviceSnapShot.data()['Service ETA']);
+      for (var min = startMins + 60 * startHrs; min < (numOfMins - serviceETA); min = min + serviceETA) {
+        var start = min;
+        var end = start + serviceETA;
+        var consistent = true;
+        var stringStartHrs = (Math.floor(start / 60) < 10) ? `0${String(Math.floor(start / 60))}` : Math.floor(start / 60);
+        var stringStartMins = (start % 60 < 10) ? `0${String(start % 60)}` : String(start % 60);
+        var stringEndHrs = (Math.floor(end / 60) < 10) ? `0${String(Math.floor(end / 60))}` : String(Math.floor(end / 60));
+        var stringEndMins = (end % 60 < 10) ? `0${String(end % 60)}` : String(end % 60);
+
+        timeSlots.push({
+          start: stringStartHrs + ":" + stringStartMins,
+          end: stringEndHrs + ":" + stringEndMins
+        });
+      }
+    }
+
+
+    return timeSlots;
 
   },
 
