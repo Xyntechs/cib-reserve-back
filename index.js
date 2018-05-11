@@ -7,6 +7,7 @@ const database = require("./db");  // m
 const express = require("express");
 const app = express();
 var Type = require('type-of-is')
+let found;
 
 
 // parse application/x-www-form-urlencoded
@@ -200,30 +201,23 @@ app.post("/returnAvailableSlots", async (req, res) => {
 
     //Is the client already has a date?
     //Get timeframes referrence
-    var resolvedTimeFrames = database.getDocumentFromCollection(bank, branch).collection('TimeFrames').get().resolve(33);
-    var found = resolvedTimeFrames.then(querySnapShot => {
-      querySnapShot.forEach(doc => {
-        timeSlotReg = doc.ref.collection('TimeSlots');
-        var resolvedTimeSlots = timeSlotReg.get().Resolve(33);
-        var timeSlotFound = resolvedTimeSlots.then((querySnapShot) => {
-          querySnapShot.forEach(doc => {
-            if (doc.data()['clientId'] == clientId) {
-              console.log("User already has an appointment", doc)
-              return true;
-            }
+    database.getDocumentFromCollection(bank, branch).collection('TimeFrames').get()
+      .then(querySnapShot => {
+        querySnapShot.forEach(doc => {
+          timeSlotReg = doc.ref.collection('TimeSlots');
+          timeSlotReg.get().then((querySnapShot) => {
+            querySnapShot.forEach(doc => {
+              if (doc.data()['clientId'] == clientId) {
+                console.log("User already has an appointment", doc)
+                return res.status(500).json({ error: "User already has an appointment" });
+              }
+            });
           });
         });
-        return timeSlotFound;
+      }).catch(err => {
+        console.log(err.message);
+        return res.status(500).json({ error: "Something went wrong, try again later" })
       });
-    }).then((data) => {
-      console.log(data);
-      console.log("we are here", found);
-      if (found)
-        return res.status(500).json({ error: "User already has an appointment" });
-    }).catch(err => {
-      console.log(err.message);
-      return res.status(500).json({ error: "Something went wrong, try again later" })
-    });
 
 
 
