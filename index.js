@@ -121,9 +121,9 @@ var prepareReservations = {
             });
 
         })
-      }).then(data => {
+      })/*.then(data => {
         return res.status(500).json(counters);
-      })
+      })*/
   },
 
   findCounterTimeSlots(timeFrameOnDate, service) {
