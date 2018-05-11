@@ -236,45 +236,42 @@ app.post("/returnAvailableSlots", async (req, res) => {
               }
             });
           }).then(data => {
-            console.log(found);
+
             if (found)
               return res.status(500).json({ error: "User already has an appointment" });
             prepareReservations.deleteAnyPastReservations(bank, branch);
           }).then(data => {
-            try {
-              prepareReservations.findORCreateDayTimeFrame(date, bank, branch, service)
-                .then(data => {
-                  return res.status(200).json(Counters);
-                });
-            }
-            catch (error) {
-              if (error.message == "This service is not supported currently") {
-                console.log(error, " -- returnAvailableSlots:findORCreateDayTimeFrame route")
-                return res.status(500).json({ error: "This service is not supported currently" })
-              }
+            prepareReservations.findORCreateDayTimeFrame(date, bank, branch, service)
+              .then(data => {
+                return res.status(200).json(Counters);
+              });
+          }).catch(error => {
+            console.log(error.message);
+            if (error.message == "This service is not supported currently") {
+              console.log(error, " -- returnAvailableSlots:findORCreateDayTimeFrame route")
+              return res.status(500).json({ error: "This service is not supported currently" });
             }
           });
         });
-      });
-  }
+      }
   catch (error) {
-    console.log(error, " -- returnAvailableSlots route")
-    return res.status(500).json({ error: "Something went wrong, try again later" })
-  }
+      console.log(error, " -- returnAvailableSlots route")
+      return res.status(500).json({ error: "Something went wrong, try again later" })
+    }
 
-  // res.status(200).send("Done");
+    // res.status(200).send("Done");
 
-  /*
-  try {
-    prepareReservations.findORCreateDayTimeFrame(date, bank, branch, service);
-  }
-  catch (err) {
-    console.log(err.message);
-  }
-  */
+    /*
+    try {
+      prepareReservations.findORCreateDayTimeFrame(date, bank, branch, service);
+    }
+    catch (err) {
+      console.log(err.message);
+    }
+    */
 
-  //res.status(200).send(counters);
-});
+    //res.status(200).send(counters);
+  });
 
 
 const listener = app.listen(process.env.PORT || 5000, function () {
