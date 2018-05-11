@@ -109,7 +109,7 @@ var prepareReservations = {
               else {
                 counter.counterId = counterSnap.id;
                 try {
-                  counter.timeSlots = this.findCounterTimeSlots(timeFrameOnDate, service);
+                  counter.timeSlots = this.findCounterTimeSlots(bank, branch, timeFrameOnDate, service);
                   counters.push(counter);
                 }
                 catch (error) {
@@ -126,7 +126,7 @@ var prepareReservations = {
       })
   },
 
-  findCounterTimeSlots(timeFrameOnDate, service) {
+  findCounterTimeSlots(bank, branch, timeFrameOnDate, service) {
     var timeSlots = [];
     var timeSlot = { 'start': '', 'end': '' };
 
@@ -176,13 +176,7 @@ var prepareReservations = {
                           }
                         }
                       })
-
-
                     })
-
-
-
-
                 })
             })
             .then(data => {
