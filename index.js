@@ -149,133 +149,134 @@ var prepareReservations = {
 
 
       var serviceSnap = await branchReference.collection('Services').where('Service Id', '==', service).get();
-      for (let serviceSnapShot of serviceSnap.docs()) {
+      for (let serviceSnapShot of serviceSnap.docs()){
         var serviceETA = parseInt(serviceSnapShot.data()['Service ETA']);
-        for (var min = startMins + 60 * startHrs; min < numOfMins; min++) {
-          var start = min;
-          var end = start + serviceETA;
-          var consistent = true;
-
-          for (let timeSlotSnap of timeSlotsSnap.docs()) {
-            if (!this.isConsistent(start, end, timeSlotSnap.data()['start'], timeSlotSnap.data()['end'])) {
-              consistent = false;
+          for (var min = startMins + 60 * startHrs; min < numOfMins; min++) {
+            var start = min;
+            var end = start + serviceETA;
+            var consistent = true;
+  
+            for (let timeSlotSnap of timeSlotsSnap.docs()) {
+              if (!this.isConsistent(start, end, timeSlotSnap.data()['start'], timeSlotSnap.data()['end'])) {
+                consistent = false;
+              }
+            }
+  
+            if (consistent) {
+              var stringStartHrs = String(Math.floor(start / 60));
+              var stringStartMins = String(start % 60);
+              var stringEndHrs = String(Math.floor(end / 60));
+              var stringEndMins = String(end % 60);
+              timeSlot['start'] = stringStartHrs + ":" + stringStartMins;
+              timeSlot['end'] = stringEndHrs + ":" + stringEndMins;
+              timeSlots.push(timeSlot);
+              min = end + 1;
             }
           }
-
-          if (consistent) {
-            var stringStartHrs = String(Math.floor(start / 60));
-            var stringStartMins = String(start % 60);
-            var stringEndHrs = String(Math.floor(end / 60));
-            var stringEndMins = String(end % 60);
-            timeSlot['start'] = stringStartHrs + ":" + stringStartMins;
-            timeSlot['end'] = stringEndHrs + ":" + stringEndMins;
-            timeSlots.push(timeSlot);
-            min = end + 1;
-          }
-        }
       }
+    })
 
-      return timeSlots;
-    },
+    return timeSlots;
+  },
 
-      createDayTimeFrame(res, serviceCounters, day, month, year) {
+  createDayTimeFrame(res, serviceCounters, day, month, year) {
 
 
 
-      },
+  },
 
-      isConsistent(objectStart, objectEnd, subjectStart, subjectEnd) { //returns if the object time slot is consistent to exist with the subject time slot.
+  isConsistent(objectStart, objectEnd, subjectStart, subjectEnd) { //returns if the object time slot is consistent to exist with the subject time slot.
 
-        var subjectStartHrs = parseInt(subjectStart.split(':')[0]);
-        var subjectStartMins = parseInt(subjectStart.split(':')[1]);
+    var subjectStartHrs = parseInt(subjectStart.split(':')[0]);
+    var subjectStartMins = parseInt(subjectStart.split(':')[1]);
 
-        var subjectEndHrs = parseInt(subjectEnd.split(':')[0]);
-        var subjectEndMins = parseInt(subjectEnd.split(':')[1]);
+    var subjectEndHrs = parseInt(subjectEnd.split(':')[0]);
+    var subjectEndMins = parseInt(subjectEnd.split(':')[1]);
 
-        var subjectSt = subjectStartMins + 60 * subjectStartHrs;
-        var subjectEn = subjectEndMins + 60 * subjectEndHrs;
+    var subjectSt = subjectStartMins + 60 * subjectStartHrs;
+    var subjectEn = subjectEndMins + 60 * subjectEndHrs;
 
-        if((objectStart > subjectSt && objectStart < subjectEn)
+    if ((objectStart > subjectSt && objectStart < subjectEn)
       || (objectEnd > subjectSt && objectEnd < subjectEn)
       || (objectStart <= subjectSt && objectEnd >= subjectEn))
-    return false;
-      else
-        return true;
-
-}
-
-
-    /*
-        if (timeFramesRef.where('day', '==', day).where('month', '==', month).where('year', '==', year).exists()) {
-          var countersRef = database.getDocumentFromCollection(bank, branch).collection('Counters');
-          if (!countersRef.exists()) {
-            throw new Error('There is no counter supports this service');
-          }
-          var Counters = await countersRef.get()
-          Counters.forEach(async (Counter) => {
-            if (Counter.where('Service Id', '==', service).exist()) {
-              var counterTimeSlots = timeFrame.where('counterId', '==', doc.id);
-              var timeFrameSnapShot = await counterTimeSlots.get()
-              timeFrameSnapShot.forEach(counterTimeSlot => {
-                dayTimeSlot.start = counterTimeSlot.getData('start');
-                dayTimeSlot.end = counterTimeSlot.getData('end');
-                counter.counterId = counterTimeSlot.getData('counterId');
-                counter.timeSlots.push(dayTimeSlot);
-              });
-              counters.push(counter);
-            }
-          });
-        }
-        else { //yabny ana msh 3aref a send lel functio
-    
-          var branchReference = DB.collection(bank).doc(branch);
-    
-          //Get working hours
-          var workHrs;
-          branchReference.get().then(doc => {
-            workHrs = doc.Data().get('Working Hours').split('-'); //start: workHrs[0], end: workHrs[1]
-          });
-    
-          var startHrs = parseInt(workHrs[0].split(':')[0]);
-          var startMins = parseInt(workHrs[0].split(':')[1]);
-          var serviceETA = parseInt(branchReference.collection(''));
-    
-          var endHrs = parseInt(workHrs[1].split(':')[0]);
-          var endMins = parseInt(workHrs[1].split(':')[1]);
-          var numOfSlots = ((endHrs - startHrs) * 60 + (endMins - startMins));
-    
-    
-          DB.collection('Counters').get().then(querySnapshot => {
-            querySnapshot.forEach(counter => {
-              if (counter.collection(Services).where("Service Id", '==', service).exists()) {
-                var i;
-                for (i = 1; i < numOfSlots; i++) {
-                  minute.value = i;
-                  dayTimeFrame.push(minute);
-                }
-                countersDB.push(dayTimeFrame);
-              }
-            });
-            //Create day Time Frame and store it in the database
-            //Divide the working hrs according to the service for the counters supporting this service
-            branchReference.collection('Counters').where('', '', service).get().then(querySnapshot => {
-              querySnapshot.forEach(counter => {
-                //for each counter create the timeslots  
-                counter.get('')
-    
-              });
-    
-            });
-    
-    
-    
-    
-    
-          }
-          return counters;
-        }*/
+      return false;
+    else
+      return true;
 
   }
+
+
+  /*
+      if (timeFramesRef.where('day', '==', day).where('month', '==', month).where('year', '==', year).exists()) {
+        var countersRef = database.getDocumentFromCollection(bank, branch).collection('Counters');
+        if (!countersRef.exists()) {
+          throw new Error('There is no counter supports this service');
+        }
+        var Counters = await countersRef.get()
+        Counters.forEach(async (Counter) => {
+          if (Counter.where('Service Id', '==', service).exist()) {
+            var counterTimeSlots = timeFrame.where('counterId', '==', doc.id);
+            var timeFrameSnapShot = await counterTimeSlots.get()
+            timeFrameSnapShot.forEach(counterTimeSlot => {
+              dayTimeSlot.start = counterTimeSlot.getData('start');
+              dayTimeSlot.end = counterTimeSlot.getData('end');
+              counter.counterId = counterTimeSlot.getData('counterId');
+              counter.timeSlots.push(dayTimeSlot);
+            });
+            counters.push(counter);
+          }
+        });
+      }
+      else { //yabny ana msh 3aref a send lel functio
+  
+        var branchReference = DB.collection(bank).doc(branch);
+  
+        //Get working hours
+        var workHrs;
+        branchReference.get().then(doc => {
+          workHrs = doc.Data().get('Working Hours').split('-'); //start: workHrs[0], end: workHrs[1]
+        });
+  
+        var startHrs = parseInt(workHrs[0].split(':')[0]);
+        var startMins = parseInt(workHrs[0].split(':')[1]);
+        var serviceETA = parseInt(branchReference.collection(''));
+  
+        var endHrs = parseInt(workHrs[1].split(':')[0]);
+        var endMins = parseInt(workHrs[1].split(':')[1]);
+        var numOfSlots = ((endHrs - startHrs) * 60 + (endMins - startMins));
+  
+  
+        DB.collection('Counters').get().then(querySnapshot => {
+          querySnapshot.forEach(counter => {
+            if (counter.collection(Services).where("Service Id", '==', service).exists()) {
+              var i;
+              for (i = 1; i < numOfSlots; i++) {
+                minute.value = i;
+                dayTimeFrame.push(minute);
+              }
+              countersDB.push(dayTimeFrame);
+            }
+          });
+          //Create day Time Frame and store it in the database
+          //Divide the working hrs according to the service for the counters supporting this service
+          branchReference.collection('Counters').where('', '', service).get().then(querySnapshot => {
+            querySnapshot.forEach(counter => {
+              //for each counter create the timeslots  
+              counter.get('')
+  
+            });
+  
+          });
+  
+  
+  
+  
+  
+        }
+        return counters;
+      }*/
+
+}
 
 
 // da first, lazm t3ml el function ely bt3ml fe7a await async
