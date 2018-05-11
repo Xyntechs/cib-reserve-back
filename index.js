@@ -97,7 +97,7 @@ var prepareReservations = {
     if (servicesSnapShot.empty)
       return res.status(500).json({ error: "The service is unavailable in all counters" });
 
-    countersRef = await database.getDocumentFromCollection(bank, branch).collection('Counters').get();
+    var countersRef = await database.getDocumentFromCollection(bank, branch).collection('Counters').get();
 
     var done = await countersRef.forEach(async counterSnap => {
       var timeFrameOnDate = timeFramesRef.where('day', '==', day).where('month', '==', month).where('year', '==', year)
@@ -310,29 +310,22 @@ app.post("/returnAvailableSlots", async (req, res) => {
 
     //Is the client already has a date?
     let found;
-    database.getDocumentFromCollection(bank, branch).collection('TimeFrames').get()
-      .then(timeFramesSnapShot => {
-        timeFramesSnapShot.forEach(doc => {
-          var timeSlotReg = doc.ref.collection('TimeSlots');
-          timeSlotReg.get().then(timeSlotsSnapShot => {
-            timeSlotsSnapShot.forEach(doc => {
-              if (doc.data()['clientId'] == clientId) {
-                console.log("User already has an appointment", doc)
-                found = true;
-              }
-            });
-          }).then(data => {
-            if (found)
-              return res.status(500).json({ error: "User already has an appointment" });
-            prepareReservations.deleteAnyPastReservations(bank, branch);
-          }).then(data => {
-            var finished = await prepareReservations.findORCreateDayTimeFrame(res, resDate, bank, branch, service)
-            return finished;
-          }).catch(error => {
-            console.log(error.message);
-          });
-        });
+    var timeFramesSnapShot = await database.getDocumentFromCollection(bank, branch).collection('TimeFrames').get();
+    timeFramesSnapShot.forEach(async doc => {
+      var timeSlotReg = doc.ref.collection('TimeSlots');
+      var timeSlotsSnapShot = await timeSlotReg.get();
+      timeSlotsSnapShot.forEach(doc => {
+        if (doc.data()['clientId'] == clientId) {
+          console.log("User already has an appointment", doc)
+          found = true;
+        }
       });
+    });
+    if (found)
+      return res.status(500).json({ error: "User already has an appointment" });
+    prepareReservations.deleteAnyPastReservations(bank, branch);
+    var finished = await prepareReservations.findORCreateDayTimeFrame(res, resDate, bank, branch, service)
+    return finished;
   }
   catch (error) {
     console.log(error, " -- returnAvailableSlots route")
