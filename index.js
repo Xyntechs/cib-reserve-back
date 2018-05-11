@@ -116,6 +116,7 @@ var prepareReservations = {
         console.log(counterSnap.id);
         try {
           counter.timeSlots = await this.findCounterTimeSlots(bank, branch, timeFrameOnDate, service);
+          console.log(counter.timeSlots);
           counters.push(counter);
         }
         catch (error) {
