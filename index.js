@@ -241,19 +241,23 @@ app.post("/returnAvailableSlots", async (req, res) => {
               return res.status(500).json({ error: "User already has an appointment" });
             prepareReservations.deleteAnyPastReservations(bank, branch);
           }).then(data => {
-            prepareReservations.findORCreateDayTimeFrame(date, bank, branch, service)
-              .then(data => {
-                return res.status(200).json(Counters);
-              });
+            try {
+              prepareReservations.findORCreateDayTimeFrame(date, bank, branch, service)
+                .then(data => {
+                  return res.status(200).json(Counters);
+                });
+            }
+            catch (error) {
+              if (error.message == "This service is not supported currently") {
+                console.log(error, " -- returnAvailableSlots:findORCreateDayTimeFrame route")
+                return res.status(500).json({ error: "This service is not supported currently" })
+              }
+            }
           });
         });
       });
   }
   catch (error) {
-    if (error.message == "This service is not supported currently") {
-      console.log(error, " -- returnAvailableSlots:findORCreateDayTimeFrame route")
-      return res.status(500).json({ error: "This service is not supported currently" })
-    }
     console.log(error, " -- returnAvailableSlots route")
     return res.status(500).json({ error: "Something went wrong, try again later" })
   }
