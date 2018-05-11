@@ -100,6 +100,10 @@ var prepareReservations = {
     var countersRef = await database.getDocumentFromCollection(bank, branch).collection('Counters').get();
 
     var done = await countersRef.forEach(async counterSnap => {
+      console.log(day);
+      console.log(month);
+      console.log(year);
+
       var timeFrameOnDate = timeFramesRef.where('day', '==', day).where('month', '==', month).where('year', '==', year)
       if (timeFrameOnDate.empty) {
         return this.createDayTimeFrame(res, service, day, month, year);
