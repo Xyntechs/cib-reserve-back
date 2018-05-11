@@ -121,71 +121,51 @@ var prepareReservations = {
 
   },
 
-  findCounterTimeSlots(bank, branch, timeFrameOnDate, service) {
+  async findCounterTimeSlots(bank, branch, timeFrameOnDate, service) {
     var timeSlots = [];
     var timeSlot = { 'start': '', 'end': '' };
 
     var branchReference = database.getDocumentFromCollection(bank, branch);
-    timeFrameOnDate.get()
-      .then(timeFrameOnDateSnap => {
-        timeFrameOnDateSnap.forEach(timeFrameOnDateSnap => {
-          timeFrameOnDateSnap.ref.collection('TimeSlots').get()
-            .then(timeSlotsSnap => {
-              //Get working hours
-              var workHrs;
-              branchReference.get().then(doc => {
-                workHrs = doc.Data().get('Working Hours').split('-'); //start: workHrs[0], end: workHrs[1]
-              })
-                .then(data => {
-
-                  var startHrs = parseInt(workHrs[0].split(':')[0]);
-                  var startMins = parseInt(workHrs[0].split(':')[1]);
-                  var endHrs = parseInt(workHrs[1].split(':')[0]);
-                  var endMins = parseInt(workHrs[1].split(':')[1]);
-                  var numOfMins = ((endHrs - startHrs) * 60 + (endMins - startMins));
+    var timeFrameOnDateSnap = await timeFrameOnDate.get();
+    timeFrameOnDateSnap.forEach(timeFrameOnDateSnap => {
+      var timeSlotsSnap = timeFrameOnDateSnap.ref.collection('TimeSlots').get()
+      //Get working hours
+      var workHrs;
+      var doc = await branchReference.get();
+      workHrs = doc.Data().get('Working Hours').split('-'); //start: workHrs[0], end: workHrs[1]
+      var startHrs = parseInt(workHrs[0].split(':')[0]);
+      var startMins = parseInt(workHrs[0].split(':')[1]);
+      var endHrs = parseInt(workHrs[1].split(':')[0]);
+      var endMins = parseInt(workHrs[1].split(':')[1]);
+      var numOfMins = ((endHrs - startHrs) * 60 + (endMins - startMins));
 
 
-                  branchReference.collection('Services').where('Service Id', '==', service).get()
-                    .then(serviceSnap => {
-                      serviceSnap.forEach(serviceSnapShot => {
+      var serviceSnap = branchReference.collection('Services').where('Service Id', '==', service).get();
+      serviceSnap.forEach(serviceSnapShot => {
+        var serviceETA = parseInt(serviceSnapShot.data()['Service ETA']);
+        for (var min = startMins + 60 * startHrs; min < numOfMins; min++) {
+          var start = min;
+          var end = start + serviceETA;
+          var consistent = true;
+          timeSlotsSnap.forEach(timeSlotSnap => {
+            if (!this.isConsistent(start, end, timeSlotSnap.data()['start'], timeSlotSnap.data()['end'])) {
+              consistent = false;
+            }
+          })
 
-                        var serviceETA = parseInt(serviceSnapShot.data()['Service ETA']);
-                        for (var min = startMins + 60 * startHrs; min < numOfMins; min++) {
-                          var start = min;
-                          var end = start + serviceETA;
-                          var consistent = true;
-                          timeSlotsSnap.forEach(timeSlotSnap => {
-                            if (!this.isConsistent(start, end, timeSlotSnap.data()['start'], timeSlotSnap.data()['end'])) {
-                              consistent = false;
-                            }
-                          })
-
-                          if (consistent) {
-                            var stringStartHrs = String(Math.floor(start / 60));
-                            var stringStartMins = String(start % 60);
-                            var stringEndHrs = String(Math.floor(end / 60));
-                            var stringEndMins = String(end % 60);
-                            timeSlot['start'] = stringStartHrs + ":" + stringStartMins;
-                            timeSlot['end'] = stringEndHrs + ":" + stringEndMins;
-                            timeSlots.push(timeSlot);
-                          }
-                        }
-                      })
-                    })
-                })
-            })
-            .then(data => {
-              return timeSlots;
-            })
-            .catch(error => {
-              console.log(error.message);
-              throw (error.message);
-            });
-        })
+          if (consistent) {
+            var stringStartHrs = String(Math.floor(start / 60));
+            var stringStartMins = String(start % 60);
+            var stringEndHrs = String(Math.floor(end / 60));
+            var stringEndMins = String(end % 60);
+            timeSlot['start'] = stringStartHrs + ":" + stringStartMins;
+            timeSlot['end'] = stringEndHrs + ":" + stringEndMins;
+            timeSlots.push(timeSlot);
+          }
+        }
       })
-      .catch(error => {
-        console.log(error.message);
-      });
+    })
+    return timeSlots;
   },
 
   createDayTimeFrame(res, serviceCounters, day, month, year) {
