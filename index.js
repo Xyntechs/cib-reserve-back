@@ -127,7 +127,7 @@ var prepareReservations = {
 
     var branchReference = database.getDocumentFromCollection(bank, branch);
     var timeFrameOnDateSnap = await timeFrameOnDate.get();
-    timeFrameOnDateSnap.forEach(timeFrameOnDateSnap => {
+    timeFrameOnDateSnap.forEach(async timeFrameOnDateSnap => {
       var timeSlotsSnap = timeFrameOnDateSnap.ref.collection('TimeSlots').get()
       //Get working hours
       var workHrs;
