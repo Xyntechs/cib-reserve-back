@@ -39,6 +39,8 @@ var dayTimeSlot = {
 //Data used in requests to return JSON objects to Front End
 var counter = { counterId: "", timeSlots: [] };
 var counters = [];
+
+
 var minute = { reserved: false, value: 0 };
 var dayTimeFrame = [];
 var countersDB = [];
@@ -87,95 +89,116 @@ var prepareReservations = {
     }).catch(err => {
       console.log(err.message);
     });
-  }
+  },
 
-  /*
+
   //Something like singleton but on database reference to create the DayTimeFrame
   async findORCreateDayTimeFrame(date, bank, branch, service) {
-    var timeFramesRef = DB.collection(bank).doc(branch).collection('TimeFrames');
+    var timeFramesRef = database.getDocumentFromCollection(bank, branch).collection('TimeFrames');
     var day, month, year;
     day = date.getDay();
     month = date.getMonth();
     year = date.getFullYear();
-    if (timeFramesRef.where('day', '==', day).where('month', '==', month).where('year', '==', year).exists()) {
-      var countersRef = admin.firestore.collection(bank).doc(branch).collection('Counters');
-      if (!countersRef.exists()) {
-        throw new Error('There is no counter supports this service');
-      }
-      var Counters = await countersRef.get()
-      Counters.forEach(async (Counter) => {
-        if (Counter.where('Service Id', '==', service).exist()) {
-          var counterTimeSlots = timeFrame.where('counterId', '==', doc.id);
-          var timeFrameSnapShot = await counterTimeSlots.get()
-          timeFrameSnapShot.forEach(counterTimeSlot => {
-            dayTimeSlot.start = counterTimeSlot.getData('start');
-            dayTimeSlot.end = counterTimeSlot.getData('end');
-            counter.counterId = counterTimeSlot.getData('counterId');
-            counter.timeSlots.push(dayTimeSlot);
-          });
-          counters.push(counter);
-        }
-      });
+    let serviceFound = false;
+    let serviceCounters;
+    var countersRef = await database.getDocumentFromCollection(bank, branch).collection('Counters').get();
+    try {
+      countersRef.forEach(counter => {
+        counter.ref.collection('Services').where('Service Name', '==', service).get()
+          .then(serviceCounters => {
+            if (serviceCounters.empty())
+              throw new Error("This service is not supported currently");
+
+          })
+
+      })
     }
-    else { //yabny ana msh 3aref a send lel functio
-
-      var branchReference = DB.collection(bank).doc(branch);
-
-      //Get working hours
-      var workHrs;
-      branchReference.get().then(doc => {
-        workHrs = doc.Data().get('Working Hours').split('-'); //start: workHrs[0], end: workHrs[1]
-      });
-
-      var startHrs = parseInt(workHrs[0].split(':')[0]);
-      var startMins = parseInt(workHrs[0].split(':')[1]);
-      var serviceETA = parseInt(branchReference.collection(''));
-
-      var endHrs = parseInt(workHrs[1].split(':')[0]);
-      var endMins = parseInt(workHrs[1].split(':')[1]);
-      var numOfSlots = ((endHrs - startHrs) * 60 + (endMins - startMins));
+    catch (error) {
+      console.log(error, "This service is not supported currently")
+      throw new Error("This service is not supported currently");
+    }
 
 
-      DB.collection('Counters').get().then(querySnapshot => {
-        querySnapshot.forEach(counter => {
-          if (counter.collection(Services).where("Service Id", '==', service).exists()) {
-            var i;
-            for (i = 1; i < numOfSlots; i++) {
-              minute.value = i;
-              dayTimeFrame.push(minute);
-            }
-            countersDB.push(dayTimeFrame);
+    /*
+        if (timeFramesRef.where('day', '==', day).where('month', '==', month).where('year', '==', year).exists()) {
+          var countersRef = database.getDocumentFromCollection(bank, branch).collection('Counters');
+          if (!countersRef.exists()) {
+            throw new Error('There is no counter supports this service');
           }
-        });
-
-
-
-
-
-
-
-        //Create day Time Frame and store it in the database
-
-
-        //Divide the working hrs according to the service for the counters supporting this service
-        branchReference.collection('Counters').where('', '', service).get().then(querySnapshot => {
-          querySnapshot.forEach(counter => {
-            //for each counter create the timeslots  
-            counter.get('')
-
+          var Counters = await countersRef.get()
+          Counters.forEach(async (Counter) => {
+            if (Counter.where('Service Id', '==', service).exist()) {
+              var counterTimeSlots = timeFrame.where('counterId', '==', doc.id);
+              var timeFrameSnapShot = await counterTimeSlots.get()
+              timeFrameSnapShot.forEach(counterTimeSlot => {
+                dayTimeSlot.start = counterTimeSlot.getData('start');
+                dayTimeSlot.end = counterTimeSlot.getData('end');
+                counter.counterId = counterTimeSlot.getData('counterId');
+                counter.timeSlots.push(dayTimeSlot);
+              });
+              counters.push(counter);
+            }
           });
-
-        });
-
-
-
-
-
-      }
-      return counters;
-    }*/
-};
-
+        }
+        else { //yabny ana msh 3aref a send lel functio
+    
+          var branchReference = DB.collection(bank).doc(branch);
+    
+          //Get working hours
+          var workHrs;
+          branchReference.get().then(doc => {
+            workHrs = doc.Data().get('Working Hours').split('-'); //start: workHrs[0], end: workHrs[1]
+          });
+    
+          var startHrs = parseInt(workHrs[0].split(':')[0]);
+          var startMins = parseInt(workHrs[0].split(':')[1]);
+          var serviceETA = parseInt(branchReference.collection(''));
+    
+          var endHrs = parseInt(workHrs[1].split(':')[0]);
+          var endMins = parseInt(workHrs[1].split(':')[1]);
+          var numOfSlots = ((endHrs - startHrs) * 60 + (endMins - startMins));
+    
+    
+          DB.collection('Counters').get().then(querySnapshot => {
+            querySnapshot.forEach(counter => {
+              if (counter.collection(Services).where("Service Id", '==', service).exists()) {
+                var i;
+                for (i = 1; i < numOfSlots; i++) {
+                  minute.value = i;
+                  dayTimeFrame.push(minute);
+                }
+                countersDB.push(dayTimeFrame);
+              }
+            });
+    
+    
+    
+    
+    
+    
+    
+            //Create day Time Frame and store it in the database
+    
+    
+            //Divide the working hrs according to the service for the counters supporting this service
+            branchReference.collection('Counters').where('', '', service).get().then(querySnapshot => {
+              querySnapshot.forEach(counter => {
+                //for each counter create the timeslots  
+                counter.get('')
+    
+              });
+    
+            });
+    
+    
+    
+    
+    
+          }
+          return counters;
+        }*/
+  }
+}
 
 
 // da first, lazm t3ml el function ely bt3ml fe7a await async
@@ -210,29 +233,27 @@ app.post("/returnAvailableSlots", async (req, res) => {
               if (doc.data()['clientId'] == clientId) {
                 console.log("User already has an appointment", doc)
                 found = true;
-                return true;
               }
             });
           }).then(data => {
-            console.log(data);
             console.log(found);
             if (found)
               return res.status(500).json({ error: "User already has an appointment" });
-          }).then(data => {
             prepareReservations.deleteAnyPastReservations(bank, branch);
-            return res.status(200).send("Done");
+          }).then(data => {
+            prepareReservations.findORCreateDayTimeFrame(date, bank, branch, service)
+              .then(data => {
+                return res.status(200).json(Counters);
+              });
           });
         });
       });
-
-
-
-
-
-
-
   }
   catch (error) {
+    if (error.message == "This service is not supported currently") {
+      console.log(error, " -- returnAvailableSlots:findORCreateDayTimeFrame route")
+      return res.status(500).json({ error: "This service is not supported currently" })
+    }
     console.log(error, " -- returnAvailableSlots route")
     return res.status(500).json({ error: "Something went wrong, try again later" })
   }
