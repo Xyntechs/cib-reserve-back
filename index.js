@@ -92,7 +92,7 @@ var prepareReservations = {
     month = resDate.getMonth() + 1;
     year = resDate.getFullYear();
 
-    database.getDocumentFromCollection(bank, branch).collection('Services').where('Service Name', '==', service).get()
+    database.getCollection('Services').where('Service Name', '==', service).get()
       .then(servicesSnapShot => {
         if (servicesSnapShot.empty)
           return res.status(500).json({ error: "The service is unavailable in all counters" });
@@ -119,7 +119,7 @@ var prepareReservations = {
               }
             })
           }).then(data => {
-
+            return res.status(200).json(counters)
           }).catch(error => {
             console.log(error.message);
           });
