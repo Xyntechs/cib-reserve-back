@@ -113,117 +113,117 @@ var prepareReservations = {
                 catch (error) {
                   console.log(error, " -- returnAvailableSlots route")
                   return res.status(500).json({ error: "Something went wrong, try again later" })
-                }*/
+                }
 
-            }
+              }*/
             }).catch(error => {
-            console.log(error.message);
-          });
+              console.log(error.message);
+            });
 
+        })
+      }).then(data => {
+        return res.status(500).json(counters);
       })
-  }).then(data => {
-  return res.status(500).json(counters);
-})
   },
 
-findCounterTimeSlots(timeFrameOnDate, service) {
-  var timeSlots = [];
-  var timeSlot = { 'start': '', 'end': '' };
+  findCounterTimeSlots(timeFrameOnDate, service) {
+    var timeSlots = [];
+    var timeSlot = { 'start': '', 'end': '' };
 
-  var branchReference = database.getDocumentFromCollection(bank, branch);
-  timeFrameOnDate.get()
-    .then(timeFrameOnDateSnap => {
-      timeFrameOnDateSnap.forEach(timeFrameOnDateSnap => {
-        timeFrameOnDateSnap.ref.collection('TimeSlots').get()
-          .then(timeSlotsSnap => {
-            //Get working hours
-            var workHrs;
-            branchReference.get().then(doc => {
-              workHrs = doc.Data().get('Working Hours').split('-'); //start: workHrs[0], end: workHrs[1]
-            })
-              .then(data => {
+    var branchReference = database.getDocumentFromCollection(bank, branch);
+    timeFrameOnDate.get()
+      .then(timeFrameOnDateSnap => {
+        timeFrameOnDateSnap.forEach(timeFrameOnDateSnap => {
+          timeFrameOnDateSnap.ref.collection('TimeSlots').get()
+            .then(timeSlotsSnap => {
+              //Get working hours
+              var workHrs;
+              branchReference.get().then(doc => {
+                workHrs = doc.Data().get('Working Hours').split('-'); //start: workHrs[0], end: workHrs[1]
+              })
+                .then(data => {
 
-                var startHrs = parseInt(workHrs[0].split(':')[0]);
-                var startMins = parseInt(workHrs[0].split(':')[1]);
-                var endHrs = parseInt(workHrs[1].split(':')[0]);
-                var endMins = parseInt(workHrs[1].split(':')[1]);
-                var numOfMins = ((endHrs - startHrs) * 60 + (endMins - startMins));
+                  var startHrs = parseInt(workHrs[0].split(':')[0]);
+                  var startMins = parseInt(workHrs[0].split(':')[1]);
+                  var endHrs = parseInt(workHrs[1].split(':')[0]);
+                  var endMins = parseInt(workHrs[1].split(':')[1]);
+                  var numOfMins = ((endHrs - startHrs) * 60 + (endMins - startMins));
 
 
-                branchReference.collection('Services').where('Service Id', '==', service).get()
-                  .then(serviceSnap => {
-                    serviceSnap.forEach(serviceSnapShot => {
+                  branchReference.collection('Services').where('Service Id', '==', service).get()
+                    .then(serviceSnap => {
+                      serviceSnap.forEach(serviceSnapShot => {
 
-                      var serviceETA = parseInt(serviceSnapShot.data()['Service ETA']);
-                      for (var min = startMins + 60 * startHrs; min < numOfMins; min++) {
-                        var start = min;
-                        var end = start + serviceETA;
-                        var consistent = true;
-                        timeSlotsSnap.forEach(timeSlotSnap => {
-                          if (!this.isConsistent(start, end, timeSlotSnap.data()['start'], timeSlotSnap.data()['end'])) {
-                            consistent = false;
+                        var serviceETA = parseInt(serviceSnapShot.data()['Service ETA']);
+                        for (var min = startMins + 60 * startHrs; min < numOfMins; min++) {
+                          var start = min;
+                          var end = start + serviceETA;
+                          var consistent = true;
+                          timeSlotsSnap.forEach(timeSlotSnap => {
+                            if (!this.isConsistent(start, end, timeSlotSnap.data()['start'], timeSlotSnap.data()['end'])) {
+                              consistent = false;
+                            }
+                          })
+
+                          if (consistent) {
+                            var stringStartHrs = String(Math.floor(start / 60));
+                            var stringStartMins = String(start % 60);
+                            var stringEndHrs = String(Math.floor(end / 60));
+                            var stringEndMins = String(end % 60);
+                            timeSlot['start'] = stringStartHrs + ":" + stringStartMins;
+                            timeSlot['end'] = stringEndHrs + ":" + stringEndMins;
+                            timeSlots.push(timeSlot);
                           }
-                        })
-
-                        if (consistent) {
-                          var stringStartHrs = String(Math.floor(start / 60));
-                          var stringStartMins = String(start % 60);
-                          var stringEndHrs = String(Math.floor(end / 60));
-                          var stringEndMins = String(end % 60);
-                          timeSlot['start'] = stringStartHrs + ":" + stringStartMins;
-                          timeSlot['end'] = stringEndHrs + ":" + stringEndMins;
-                          timeSlots.push(timeSlot);
                         }
-                      }
+                      })
+
+
                     })
 
 
-                  })
 
 
-
-
-              })
-          })
-          .then(data => {
-            return timeSlots;
-          })
-          .catch(error => {
-            console.log(error.message);
-            throw (error.message);
-          });
+                })
+            })
+            .then(data => {
+              return timeSlots;
+            })
+            .catch(error => {
+              console.log(error.message);
+              throw (error.message);
+            });
+        })
       })
-    })
-    .catch(error => {
-      console.log(error.message);
-    });
-},
+      .catch(error => {
+        console.log(error.message);
+      });
+  },
 
-createDayTimeFrame(res, serviceCounters, day, month, year) {
-
+  createDayTimeFrame(res, serviceCounters, day, month, year) {
 
 
-},
 
-isConsistent(objectStart, objectEnd, subjectStart, subjectEnd) { //returns if the object time slot is consistent to exist with the subject time slot.
+  },
 
-  var subjectStartHrs = parseInt(subjectStart.split(':')[0]);
-  var subjectStartMins = parseInt(subjectStart.split(':')[1]);
+  isConsistent(objectStart, objectEnd, subjectStart, subjectEnd) { //returns if the object time slot is consistent to exist with the subject time slot.
 
-  var subjectEndHrs = parseInt(subjectEnd.split(':')[0]);
-  var subjectEndMins = parseInt(subjectEnd.split(':')[1]);
+    var subjectStartHrs = parseInt(subjectStart.split(':')[0]);
+    var subjectStartMins = parseInt(subjectStart.split(':')[1]);
 
-  var subjectSt = subjectStartMins + 60 * subjectStartHrs;
-  var subjectEn = subjectEndMins + 60 * subjectEndHrs;
+    var subjectEndHrs = parseInt(subjectEnd.split(':')[0]);
+    var subjectEndMins = parseInt(subjectEnd.split(':')[1]);
 
-  if ((objectStart > subjectSt && objectStart < subjectEn)
-    || (objectEnd > subjectSt && objectEnd < subjectEn)
-    || (objectStart <= subjectSt && objectEnd >= subjectEn))
-    return false;
-  else
-    return true;
+    var subjectSt = subjectStartMins + 60 * subjectStartHrs;
+    var subjectEn = subjectEndMins + 60 * subjectEndHrs;
 
-}
+    if ((objectStart > subjectSt && objectStart < subjectEn)
+      || (objectEnd > subjectSt && objectEnd < subjectEn)
+      || (objectStart <= subjectSt && objectEnd >= subjectEn))
+      return false;
+    else
+      return true;
+
+  }
 
 
   /*
