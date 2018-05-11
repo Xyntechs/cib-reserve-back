@@ -94,26 +94,40 @@ var prepareReservations = {
 
   //Something like singleton but on database reference to create the DayTimeFrame
   async findORCreateDayTimeFrame(resDate, bank, branch, service) {
-    var timeFramesRef = database.getDocumentFromCollection(bank, branch).collection('TimeFrames');
-    var day, month, year;
-    day = resDate.getDay();
-    month = resDate.getMonth();
-    year = resDate.getFullYear();
-    let serviceFound = false;
-    let serviceCounters;
-    var countersRef = await database.getDocumentFromCollection(bank, branch).collection('Counters').get();
-    countersRef.forEach(counter => {
-      counter.ref.collection('Services').where('Service Name', '==', service).get()
-        .then(serviceCounters => {
-          if (serviceCounters.empty)
-            throw new Error("This service is not supported currently");
 
-        }).catch(error => {
-          console.log(error, "This service is not supported currently")
-          throw new Error("This service is not supported currently");
-        });
+    try {
+      var timeFramesRef = database.getDocumentFromCollection(bank, branch).collection('TimeFrames');
+      var day, month, year;
+      day = resDate.getDay();
+      month = resDate.getMonth();
+      year = resDate.getFullYear();
+      let serviceFound = false;
+      let serviceCounters;
+      var countersRef = await database.getDocumentFromCollection(bank, branch).collection('Counters').get();
+      countersRef.forEach(counter => {
+        counter.ref.collection('Services').where('Service Name', '==', service).get()
+          .then(serviceCounters => {
+            if (serviceCounters.empty)
+              throw new Error("This service is not supported currently");
 
-    })
+          }).catch(error => {
+            if (error.message == "This service is not supported currently") {
+              console.log(error, "This service is not supported currently")
+              throw new Error("This service is not supported currently");
+            }
+            console.log(error.message);
+          });
+
+      })
+
+    }
+    catch (error) {
+      if (error.message == "This service is not supported currently") {
+        console.log(error, "This service is not supported currently")
+        throw new Error("This service is not supported currently");
+      }
+      console.log(error.message);
+    }
 
 
 
