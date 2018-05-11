@@ -234,78 +234,6 @@ var prepareReservations = {
       return true;
 
   }
-
-
-  /*
-      if (timeFramesRef.where('day', '==', day).where('month', '==', month).where('year', '==', year).exists()) {
-        var countersRef = database.getDocumentFromCollection(bank, branch).collection('Counters');
-        if (!countersRef.exists()) {
-          throw new Error('There is no counter supports this service');
-        }
-        var Counters = await countersRef.get()
-        Counters.forEach(async (Counter) => {
-          if (Counter.where('Service Id', '==', service).exist()) {
-            var counterTimeSlots = timeFrame.where('counterId', '==', doc.id);
-            var timeFrameSnapShot = await counterTimeSlots.get()
-            timeFrameSnapShot.forEach(counterTimeSlot => {
-              dayTimeSlot.start = counterTimeSlot.getData('start');
-              dayTimeSlot.end = counterTimeSlot.getData('end');
-              counter.counterId = counterTimeSlot.getData('counterId');
-              counter.timeSlots.push(dayTimeSlot);
-            });
-            counters.push(counter);
-          }
-        });
-      }
-      else { //yabny ana msh 3aref a send lel functio
-  
-        var branchReference = DB.collection(bank).doc(branch);
-  
-        //Get working hours
-        var workHrs;
-        branchReference.get().then(doc => {
-          workHrs = doc.Data().get('Working Hours').split('-'); //start: workHrs[0], end: workHrs[1]
-        });
-  
-        var startHrs = parseInt(workHrs[0].split(':')[0]);
-        var startMins = parseInt(workHrs[0].split(':')[1]);
-        var serviceETA = parseInt(branchReference.collection(''));
-  
-        var endHrs = parseInt(workHrs[1].split(':')[0]);
-        var endMins = parseInt(workHrs[1].split(':')[1]);
-        var numOfSlots = ((endHrs - startHrs) * 60 + (endMins - startMins));
-  
-  
-        DB.collection('Counters').get().then(querySnapshot => {
-          querySnapshot.forEach(counter => {
-            if (counter.collection(Services).where("Service Id", '==', service).exists()) {
-              var i;
-              for (i = 1; i < numOfSlots; i++) {
-                minute.value = i;
-                dayTimeFrame.push(minute);
-              }
-              countersDB.push(dayTimeFrame);
-            }
-          });
-          //Create day Time Frame and store it in the database
-          //Divide the working hrs according to the service for the counters supporting this service
-          branchReference.collection('Counters').where('', '', service).get().then(querySnapshot => {
-            querySnapshot.forEach(counter => {
-              //for each counter create the timeslots  
-              counter.get('')
-  
-            });
-  
-          });
-  
-  
-  
-  
-  
-        }
-        return counters;
-      }*/
-
 }
 
 
@@ -355,21 +283,70 @@ app.post("/returnAvailableSlots", async (req, res) => {
     console.log(error, " -- returnAvailableSlots route")
     return res.status(500).json({ error: "Something went wrong, try again later" })
   }
-
-  // res.status(200).send("Done");
-
-  /*
-  try {
-    prepareReservations.findORCreateDayTimeFrame(date, bank, branch, service);
-  }
-  catch (err) {
-    console.log(err.message);
-  }
-  */
-
-  //res.status(200).send(counters);
 });
 
+
+
+app.post("/reserveTimeSlot", async (req, res) => {
+  var bank = req.body.bank;
+  var branch = req.body.branch;
+  var clientId = req.body.clientId;
+  var counterId = req.body.counterId;
+  var start = req.body.start;
+  var end = req.body.end;
+  var notes = req.body.notes;
+  var service = req.body.service;
+  var resDate = moment(req.body.date, "YYYYMMDD").toDate();
+
+
+  var branchReference = database.getDocumentFromCollection(bank, branch);
+
+  var timeFrameOnDate = await branchReference.collection('TimeFrames').where('year', '==', resDate.getFullYear()).where('month', '==', (resDate.getMonth() + 1)).where('day', '==', resDate.getDate()).get()
+
+  if (timeFrameOnDate.empty) {
+    try {
+      var addedTimeFrame = await branchReference.collection('TimeFrames').add({
+        'year': resDate.getFullYear(),
+        'month': (resDate.getMonth() + 1),
+        'day': resDate.getDate(),
+
+      });
+
+      var addedTimeSlot = await addedTimeFrame.collection('TimeSlots').add({
+        'start': start,
+        'end': end,
+        'counterId': counterId,
+        'clientId': clientId,
+        'notes': notes,
+        'Service Name': service
+      })
+      return res.status(200).json(`The time slot has been reserved by ${clientId}`)
+      console.log('Added timeSlot with ID: ', ref.id);
+    }
+    catch (error) {
+      return res.status(200).json({ error: "Something went wrong, try again later" })
+    };
+  }
+  else {
+    for (let timeFrameSnap of timeFrameOnDate.docs) {
+      try {
+        var addedTimeSlot = await timeFrameSnap.ref.collection('TimeSlots').add({
+          'start': start,
+          'end': end,
+          'counterId': counterId,
+          'clientId': clientId,
+          'notes': notes,
+          'Service Name': service
+        });
+        return res.status(200).json(`The time slot has been reserved by ${clientId}`)
+        console.log('Added timeSlot with ID: ', ref.id);
+      }
+      catch (error) {
+        return res.status(200).json({ error: "Something went wrong, try again later" })
+      }
+    }
+  }
+});
 
 const listener = app.listen(process.env.PORT || 5000, function () {
   console.log("Listening on port " + listener.address().port); //Listening
