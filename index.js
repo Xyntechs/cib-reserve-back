@@ -3,11 +3,14 @@
 //The Firebase Admin SDK to access the Firebase Realtime Database.
 
 const bodyParser = require("body-parser");
-const database = require("./db");  // m
 const express = require("express");
+const moment = require("moment")
 const app = express();
-var Type = require('type-of-is')
-var math = require('mathjs');
+const Type = require('type-of-is')
+const math = require('mathjs');
+
+const database = require("./db");  // m
+
 let found;
 
 
@@ -282,7 +285,7 @@ app.post("/returnAvailableSlots", async (req, res) => {
     var branch = req.body.branch;
     var clientId = req.body.clientId;
     var service = req.body.service;
-    var resDate = new Date(req.body.date); //new date('11/7/2017');
+    var resDate = moment(req.body.date, "YYYYMMDD") // '20111031'
     console.log(resDate, req.body.date, "DATEEEE")
     //recieve the bank, branch, client ID, the service, reservation day date
 
@@ -310,7 +313,7 @@ app.post("/returnAvailableSlots", async (req, res) => {
     if (found)
       return res.status(500).json({ error: "User already has an appointment" });
     prepareReservations.deleteAnyPastReservations(bank, branch);
-    var finished = await prepareReservations.findORCreateDayTimeFrame(res, resDate, bank, branch, service)
+    var finished = await prepareReservations.findORCreateDayTimeFrame(res, resDate.toDate(), bank, branch, service)
     return finished;
   }
   catch (error) {
