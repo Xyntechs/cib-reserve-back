@@ -170,6 +170,7 @@ var prepareReservations = {
             timeSlot['start'] = stringStartHrs + ":" + stringStartMins;
             timeSlot['end'] = stringEndHrs + ":" + stringEndMins;
             timeSlots.push(timeSlot);
+            min = end + 1;
           }
         }
       })
