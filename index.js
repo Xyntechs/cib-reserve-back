@@ -95,37 +95,37 @@ var prepareReservations = {
     let serviceCounters;
     database.getDocumentFromCollection(bank, branch).collection('Counters').get()
       .then(countersRef => {
-        countersRef.forEach(counterSnap => {
-          counterSnap.ref.collection('Services').where('Service Name', '==', service).get()
-            .then(counterServices => {
-              if (!counterServices.empty)
-                serviceFound = true;
-              var timeFrameOnDate = timeFramesRef.where('day', '==', day).where('month', '==', month).where('year', '==', year)
-              if (timeFrameOnDate.empty) {
-                return this.createDayTimeFrame(res, service, day, month, year);
-              }
-              else {
-                counter.counterId = counterSnap.id;
-                try {
-                  counter.timeSlots = this.findCounterTimeSlots(timeFrameOnDate, service);
-                  counters.push(counter);
-                }
-                catch (error) {
-                  console.log(error, " -- returnAvailableSlots route")
-                  return res.status(500).json({ error: "Something went wrong, try again later" })
-                }
+        countersRef.forEach(async counterSnap => {
+          var counterServices = await counterSnap.ref.collection('Services').where('Service Name', '==', service).get();
+          if (!counterServices.empty)
+            serviceFound = true;
+          var timeFrameOnDate = timeFramesRef.where('day', '==', day).where('month', '==', month).where('year', '==', year)
+          if (timeFrameOnDate.empty) {
+            return this.createDayTimeFrame(res, service, day, month, year);
+          }
+          else {
+            counter.counterId = counterSnap.id;
+            try {
+              counter.timeSlots = this.findCounterTimeSlots(timeFrameOnDate, service);
+              counters.push(counter);
+            }
+            catch (error) {
+              console.log(error, " -- returnAvailableSlots route")
+              return res.status(500).json({ error: "Something went wrong, try again later" })
+            }
 
-              }
-            }).catch(error => {
-              console.log(error.message);
-            });
-
+          }
         })
-      }).then(data => {
-        if (!serviceFound) {
-          return res.status(500).json({ error: "The service is unavailable in all counters" });
-        }
-        return res.status(200).json(counters);
+          .then(data => {
+            if (!serviceFound) {
+              return res.status(500).json({ error: "The service is unavailable in all counters" });
+            }
+            return res.status(200).json(counters);
+          })
+          .catch(error => {
+            console.log(error.message);
+          });
+
       })
   },
 
