@@ -147,7 +147,7 @@ var prepareReservations = {
       var numOfMins = ((endHrs - startHrs) * 60 + (endMins - startMins));
 
 
-      var serviceSnap = branchReference.collection('Services').where('Service Id', '==', service).get();
+      var serviceSnap = await branchReference.collection('Services').where('Service Id', '==', service).get();
       serviceSnap.forEach(serviceSnapShot => {
         var serviceETA = parseInt(serviceSnapShot.data()['Service ETA']);
         for (var min = startMins + 60 * startHrs; min < numOfMins; min++) {
