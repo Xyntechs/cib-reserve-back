@@ -149,30 +149,30 @@ var prepareReservations = {
 
 
       var serviceSnap = await branchReference.collection('Services').where('Service Id', '==', service).get();
-      for (let serviceSnapShot of serviceSnap.docs()){
+      for (let serviceSnapShot of serviceSnap.docs) {
         var serviceETA = parseInt(serviceSnapShot.data()['Service ETA']);
-          for (var min = startMins + 60 * startHrs; min < numOfMins; min++) {
-            var start = min;
-            var end = start + serviceETA;
-            var consistent = true;
-  
-            for (let timeSlotSnap of timeSlotsSnap.docs()) {
-              if (!this.isConsistent(start, end, timeSlotSnap.data()['start'], timeSlotSnap.data()['end'])) {
-                consistent = false;
-              }
-            }
-  
-            if (consistent) {
-              var stringStartHrs = String(Math.floor(start / 60));
-              var stringStartMins = String(start % 60);
-              var stringEndHrs = String(Math.floor(end / 60));
-              var stringEndMins = String(end % 60);
-              timeSlot['start'] = stringStartHrs + ":" + stringStartMins;
-              timeSlot['end'] = stringEndHrs + ":" + stringEndMins;
-              timeSlots.push(timeSlot);
-              min = end + 1;
+        for (var min = startMins + 60 * startHrs; min < numOfMins; min++) {
+          var start = min;
+          var end = start + serviceETA;
+          var consistent = true;
+
+          for (let timeSlotSnap of timeSlotsSnap.docs()) {
+            if (!this.isConsistent(start, end, timeSlotSnap.data()['start'], timeSlotSnap.data()['end'])) {
+              consistent = false;
             }
           }
+
+          if (consistent) {
+            var stringStartHrs = String(Math.floor(start / 60));
+            var stringStartMins = String(start % 60);
+            var stringEndHrs = String(Math.floor(end / 60));
+            var stringEndMins = String(end % 60);
+            timeSlot['start'] = stringStartHrs + ":" + stringStartMins;
+            timeSlot['end'] = stringEndHrs + ":" + stringEndMins;
+            timeSlots.push(timeSlot);
+            min = end + 1;
+          }
+        }
       }
     })
 
