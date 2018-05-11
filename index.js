@@ -161,7 +161,7 @@ var prepareReservations = {
               end: stringEndHrs + ":" + stringEndMins
             });
 
-            min = end + 1;
+            min = end;
           }
         }
       }
