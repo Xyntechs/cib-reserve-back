@@ -213,10 +213,8 @@ app.post("/returnAvailableSlots", async (req, res) => {
         }
       });
     });
-    isRegistered.then(data => {
-      if (found)
-        return res.status(500).json({ error: "User already has an appointment" });
-    });
+    if (found)
+      return res.status(500).json({ error: "User already has an appointment" });
 
 
 
@@ -231,7 +229,7 @@ app.post("/returnAvailableSlots", async (req, res) => {
     return res.status(500).json({ error: "Something went wrong, try again later" })
   }
 
-  res.status(200).send("Done");
+  // res.status(200).send("Done");
 
   /*
   try {
