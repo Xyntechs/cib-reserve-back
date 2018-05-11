@@ -108,13 +108,9 @@ var prepareReservations = {
           counter.ref.collection('Services').where('Service Name', '==', service).get()
             .then(serviceCounters => {
               if (serviceCounters.empty)
-                throw ("This service is not supported currently");
+                callback(new Error("This service is not supported currently"));
 
             }).catch(error => {
-              if (error.message == "This service is not supported currently") {
-                console.log(error, "This service is not supported currently")
-                throw ("This service is not supported currently");
-              }
               console.log(error.message);
             });
 
