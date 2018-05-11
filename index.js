@@ -101,7 +101,7 @@ var prepareReservations = {
       .then(data => {
         database.getDocumentFromCollection(bank, branch).collection('Counters').get()
           .then(countersRef => {
-            countersRef.forEach(counterSnap => {
+            countersRef.forEach(async counterSnap => {
               var timeFrameOnDate = timeFramesRef.where('day', '==', day).where('month', '==', month).where('year', '==', year)
               if (timeFrameOnDate.empty) {
                 return this.createDayTimeFrame(res, service, day, month, year);
@@ -109,7 +109,7 @@ var prepareReservations = {
               else {
                 counter.counterId = counterSnap.id;
                 try {
-                  counter.timeSlots = this.findCounterTimeSlots(bank, branch, timeFrameOnDate, service);
+                  counter.timeSlots = await this.findCounterTimeSlots(bank, branch, timeFrameOnDate, service);
                   counters.push(counter);
                 }
                 catch (error) {
