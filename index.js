@@ -113,7 +113,7 @@ var prepareReservations = {
             }).catch(error => {
               if (error.message == "This service is not supported currently") {
                 console.log(error, "This service is not supported currently")
-                throw new Error("This service is not supported currently");
+                throw ("This service is not supported currently");
               }
               console.log(error.message);
             });
