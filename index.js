@@ -156,7 +156,7 @@ var prepareReservations = {
           var end = start + serviceETA;
           var consistent = true;
 
-          for (let timeSlotSnap of timeSlotsSnap.docs()) {
+          for (let timeSlotSnap of timeSlotsSnap.docs) {
             if (!this.isConsistent(start, end, timeSlotSnap.data()['start'], timeSlotSnap.data()['end'])) {
               consistent = false;
             }
