@@ -97,7 +97,7 @@ var prepareReservations = {
     if (servicesSnapShot.empty)
       return res.status(500).json({ error: "The service is unavailable in all counters" });
 
-    var countersRef = await database.getDocumentFromCollection(bank, branch).collection('Counters').get();
+    var countersRef = await database.getDocumentFromCollection(bank, branch).collection('Counters').get()
 
     var done = await countersRef.forEach(async counterSnap => {
       console.log(day);
@@ -132,7 +132,7 @@ var prepareReservations = {
     var branchReference = database.getDocumentFromCollection(bank, branch);
     var timeFrameOnDateSnap = await timeFrameOnDate.get();
     timeFrameOnDateSnap.forEach(async timeFrameOnDateSnap => {
-      var timeSlotsSnap = timeFrameOnDateSnap.ref.collection('TimeSlots').get()
+      var timeSlotsSnap = await timeFrameOnDateSnap.ref.collection('TimeSlots').get()
       //Get working hours
       var workHrs;
       var doc = await branchReference.get();
@@ -151,11 +151,12 @@ var prepareReservations = {
           var start = min;
           var end = start + serviceETA;
           var consistent = true;
-          timeSlotsSnap.forEach(timeSlotSnap => {
+
+          for (let timeSlotSnap of timeSlotsSnap.docs()) {
             if (!this.isConsistent(start, end, timeSlotSnap.data()['start'], timeSlotSnap.data()['end'])) {
               consistent = false;
             }
-          })
+          }
 
           if (consistent) {
             var stringStartHrs = String(Math.floor(start / 60));
@@ -282,7 +283,7 @@ app.post("/returnAvailableSlots", async (req, res) => {
     var clientId = req.body.clientId;
     var service = req.body.service;
     var resDate = new Date(req.body.date); //new date('11/7/2017');
-
+    console.log(resDate, req.body.date, "DATEEEE")
     //recieve the bank, branch, client ID, the service, reservation day date
 
     //Is the client registered in the app?
