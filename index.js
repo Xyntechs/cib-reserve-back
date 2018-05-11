@@ -100,7 +100,7 @@ var prepareReservations = {
             .then(counterServices => {
               if (!counterServices.empty)
                 serviceFound = true;
-              /*var timeFrameOnDate = timeFramesRef.where('day', '==', day).where('month', '==', month).where('year', '==', year)
+              var timeFrameOnDate = timeFramesRef.where('day', '==', day).where('month', '==', month).where('year', '==', year)
               if (timeFrameOnDate.empty) {
                 return this.createDayTimeFrame(res, service, day, month, year);
               }
@@ -115,7 +115,7 @@ var prepareReservations = {
                   return res.status(500).json({ error: "Something went wrong, try again later" })
                 }
 
-              }*/
+              }
             }).catch(error => {
               console.log(error.message);
             });
