@@ -98,8 +98,8 @@ var prepareReservations = {
         countersRef.forEach(counterSnap => {
           counterSnap.ref.collection('Services').where('Service Name', '==', service).get()
             .then(counterServices => {
-              if (counterServices.empty)
-                return res.status(500).json({ error: "The service is unavailable in all counters" });
+              if (!counterServices.empty)
+                serviceFound = true;
               /*var timeFrameOnDate = timeFramesRef.where('day', '==', day).where('month', '==', month).where('year', '==', year)
               if (timeFrameOnDate.empty) {
                 return this.createDayTimeFrame(res, service, day, month, year);
@@ -121,9 +121,12 @@ var prepareReservations = {
             });
 
         })
-      })/*.then(data => {
-        return res.status(500).json(counters);
-      })*/
+      }).then(data => {
+        if (!serviceFound) {
+          return res.status(500).json({ error: "The service is unavailable in all counters" });
+        }
+        return res.status(200).json(counters);
+      })
   },
 
   findCounterTimeSlots(timeFrameOnDate, service) {
