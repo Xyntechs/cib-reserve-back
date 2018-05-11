@@ -253,25 +253,26 @@ app.post("/returnAvailableSlots", async (req, res) => {
             }
           });
         });
-      }
+      });
+  }
   catch (error) {
-      console.log(error, " -- returnAvailableSlots route")
-      return res.status(500).json({ error: "Something went wrong, try again later" })
-    }
+    console.log(error, " -- returnAvailableSlots route")
+    return res.status(500).json({ error: "Something went wrong, try again later" })
+  }
 
-    // res.status(200).send("Done");
+  // res.status(200).send("Done");
 
-    /*
-    try {
-      prepareReservations.findORCreateDayTimeFrame(date, bank, branch, service);
-    }
-    catch (err) {
-      console.log(err.message);
-    }
-    */
+  /*
+  try {
+    prepareReservations.findORCreateDayTimeFrame(date, bank, branch, service);
+  }
+  catch (err) {
+    console.log(err.message);
+  }
+  */
 
-    //res.status(200).send(counters);
-  });
+  //res.status(200).send(counters);
+});
 
 
 const listener = app.listen(process.env.PORT || 5000, function () {
