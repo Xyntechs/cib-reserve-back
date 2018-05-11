@@ -108,8 +108,7 @@ var prepareReservations = {
           counter.ref.collection('Services').where('Service Name', '==', service).get()
             .then(serviceCounters => {
               if (serviceCounters.empty)
-                callback(new Error("This service is not supported currently"));
-
+                return "This service is not supported currently";
             }).catch(error => {
               console.log(error.message);
             });
@@ -242,15 +241,18 @@ app.post("/returnAvailableSlots", async (req, res) => {
             prepareReservations.deleteAnyPastReservations(bank, branch);
           }).then(data => {
             prepareReservations.findORCreateDayTimeFrame(resDate, bank, branch, service)
+              .then(result => {
+                if (result == "This service is not supported currently") {
+                  console.log(error, " -- returnAvailableSlots:findORCreateDayTimeFrame route")
+                  return res.status(500).json({ error: "This service is not supported currently" });
+                }
+
+              })
             /*.then(data => {
               return res.status(200).json(Counters);
             });*/
           }).catch(error => {
             console.log(error.message);
-            if (error.message == "This service is not supported currently") {
-              console.log(error, " -- returnAvailableSlots:findORCreateDayTimeFrame route")
-              return res.status(500).json({ error: "This service is not supported currently" });
-            }
           });
         });
       });
