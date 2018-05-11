@@ -209,11 +209,11 @@ app.post("/returnAvailableSlots", async (req, res) => {
             querySnapShot.forEach(doc => {
               if (doc.data()['clientId'] == clientId) {
                 console.log("User already has an appointment", doc)
-                return res.status(500).json({ error: "User already has an appointment" });
               }
             });
           });
         });
+        return res.status(500).json({ error: "User already has an appointment" });
       }).catch(err => {
         console.log(err.message);
         return res.status(500).json({ error: "Something went wrong, try again later" })
