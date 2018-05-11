@@ -203,7 +203,7 @@ app.post("/returnAvailableSlots", async (req, res) => {
     //Get timeframes referrence
     let found;
     timeFramesSnapShot = await database.getDocumentFromCollection(bank, branch).collection('TimeFrames').get()
-    timeFramesSnapShot.forEach(async doc => {
+    isRegistered = await timeFramesSnapShot.forEach(async doc => {
       timeSlotReg = doc.ref.collection('TimeSlots');
       timeSlotsSnapShot = await timeSlotReg.get();
       timeSlotsSnapShot.forEach(doc => {
@@ -212,10 +212,13 @@ app.post("/returnAvailableSlots", async (req, res) => {
           found = true;
         }
       });
-
+    });
+    isRegistered.then(data => {
       if (found)
         return res.status(500).json({ error: "User already has an appointment" });
     });
+
+
 
 
 
