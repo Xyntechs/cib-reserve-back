@@ -91,41 +91,38 @@ var prepareReservations = {
     day = resDate.getDate();
     month = resDate.getMonth() + 1;
     year = resDate.getFullYear();
-    let serviceFound = false;
-    let serviceCounters;
-    database.getDocumentFromCollection(bank, branch).collection('Counters').get()
-      .then(countersRef => {
-        countersRef.forEach(async counterSnap => {
-          var counterServices = await counterSnap.ref.collection('Services').where('Service Name', '==', service).get();
-          if (!counterServices.empty)
-            serviceFound = true;
-          var timeFrameOnDate = timeFramesRef.where('day', '==', day).where('month', '==', month).where('year', '==', year)
-          if (timeFrameOnDate.empty) {
-            return this.createDayTimeFrame(res, service, day, month, year);
-          }
-          else {
-            counter.counterId = counterSnap.id;
-            try {
-              counter.timeSlots = this.findCounterTimeSlots(timeFrameOnDate, service);
-              counters.push(counter);
-            }
-            catch (error) {
-              console.log(error, " -- returnAvailableSlots route")
-              return res.status(500).json({ error: "Something went wrong, try again later" })
-            }
 
-          }
-        })
-          .then(data => {
-            if (!serviceFound) {
-              return res.status(500).json({ error: "The service is unavailable in all counters" });
-            }
-            return res.status(200).json(counters);
-          })
-          .catch(error => {
+    database.getDocumentFromCollection(bank, branch).collection('Services').where('Service Name', '==', service).get()
+      .then(servicesSnapShot => {
+        if (servicesSnapShot.empty)
+          return res.status(500).json({ error: "The service is unavailable in all counters" });
+
+      })
+      .then(data => {
+        database.getDocumentFromCollection(bank, branch).collection('Counters').get()
+          .then(countersRef => {
+            countersRef.forEach(counterSnap => {
+              var timeFrameOnDate = timeFramesRef.where('day', '==', day).where('month', '==', month).where('year', '==', year)
+              if (timeFrameOnDate.empty) {
+                return this.createDayTimeFrame(res, service, day, month, year);
+              }
+              else {
+                counter.counterId = counterSnap.id;
+                try {
+                  counter.timeSlots = this.findCounterTimeSlots(timeFrameOnDate, service);
+                  counters.push(counter);
+                }
+                catch (error) {
+                  console.log(error, " -- returnAvailableSlots route")
+                  return res.status(500).json({ error: "Something went wrong, try again later" })
+                }
+              }
+            })
+          }).then(data => {
+
+          }).catch(error => {
             console.log(error.message);
           });
-
       })
   },
 
