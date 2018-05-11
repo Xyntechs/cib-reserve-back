@@ -201,23 +201,19 @@ app.post("/returnAvailableSlots", async (req, res) => {
 
     //Is the client already has a date?
     //Get timeframes referrence
-    database.getDocumentFromCollection(bank, branch).collection('TimeFrames').get()
-      .then(querySnapShot => {
-        querySnapShot.forEach(doc => {
-          timeSlotReg = doc.ref.collection('TimeSlots');
-          timeSlotReg.get().then((querySnapShot) => {
-            querySnapShot.forEach(doc => {
-              if (doc.data()['clientId'] == clientId) {
-                console.log("User already has an appointment", doc)
-              }
-            });
-          });
-        });
-        return res.status(500).json({ error: "User already has an appointment" });
-      }).catch(err => {
-        console.log(err.message);
-        return res.status(500).json({ error: "Something went wrong, try again later" })
+    timeFramesSnapShot = await database.getDocumentFromCollection(bank, branch).collection('TimeFrames').get()
+    timeFramesSnapShot.forEach(async doc => {
+      timeSlotReg = doc.ref.collection('TimeSlots');
+      timeSlotsSnapShot = await timeSlotReg.get();
+      timeSlotsSnapShot.forEach(doc => {
+        if (doc.data()['clientId'] == clientId) {
+          console.log("User already has an appointment", doc)
+          return res.status(500).json({ error: "User already has an appointment" });
+        }
       });
+    });
+
+
 
 
 
