@@ -193,7 +193,7 @@ var prepareReservations = {
 
     var serviceSnap = await database.getCollection('Services').where('Service Name', '==', service).get();
     for (let serviceSnapShot of serviceSnap.docs) {
-      var serviceETA = parseInt(serviceSnapShot.data()['Service ETA']);
+      var serviceETA = Math.round(serviceSnapShot.data()['Service ETA']);
       for (var min = startMins + 60 * startHrs; min < (numOfMins - serviceETA); min = min + serviceETA) {
         var start = min;
         var end = start + serviceETA;
@@ -385,6 +385,29 @@ app.post("/deleteTimeSlot", async (req, res) => {
       }
     }
     return res.status(200).json(`The time slot has been removed by ${clientId}`);
+  }
+  catch (error) {
+    return res.status(200).json({ error: "Something went wrong, try again later" })
+  }
+});
+
+var gain = 0.05;
+app.post("/feedBackService", async (req, res) => {
+
+  var service = req.body.service;
+  var serviceETAFeedback = parseFloat(req.body.serviceETA);
+
+  try {
+
+    var serviceSnap = await database.getCollection('Services').where('Service Name', '==', service).get();
+    for (let serviceSnapShot of serviceSnap.docs) {
+      var serviceETA = parseFloat(serviceSnapShot.data()['Service ETA']);
+      var newServiceETA = serviceETA * (1 - gain) + gain * serviceETAFeedback;
+
+      serviceSnapShot.ref.update({ "Service ETA": newServiceETA });
+    }
+
+    return res.status(200).json(`${service} has been updated`);
   }
   catch (error) {
     return res.status(200).json({ error: "Something went wrong, try again later" })
