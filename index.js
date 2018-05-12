@@ -298,6 +298,28 @@ app.post("/reserveTimeSlot", async (req, res) => {
   var service = req.body.service;
   var resDate = moment(req.body.date, "YYYYMMDD").toDate();
 
+  //Is the client registered in the app?
+  var registeredClient = (await database.getDocumentFromCollection('Users', clientId).get());
+  if (!registeredClient.exists) {
+    console.log("User isn't registered", registeredClient);
+    return res.status(500).json({ error: "User doesn't exist" }); // lw 3ayz t return , e3ml return b res
+  }
+
+  //Is the client already has a date?
+  let found;
+  var timeFramesSnapShot = await database.getDocumentFromCollection(bank, branch).collection('TimeFrames').get();
+  for (let doc of timeFramesSnapShot.docs) {
+    var timeSlotReg = doc.ref.collection('TimeSlots');
+    var timeSlotsSnapShot = await timeSlotReg.get();
+    for (let doc of timeSlotsSnapShot.docs) {
+      if (doc.data()['clientId'] == clientId) {
+        console.log("User already has an appointment", doc)
+        found = true;
+      }
+    }
+  }
+  if (found)
+    return res.status(500).json({ error: "User already has an appointment" });
 
   var branchReference = database.getDocumentFromCollection(bank, branch);
 
@@ -339,7 +361,7 @@ app.post("/reserveTimeSlot", async (req, res) => {
           'Service Name': service
         });
         return res.status(200).json(`The time slot has been reserved by ${clientId}`)
-        console.log('Added timeSlot with ID: ', ref.id);
+
       }
       catch (error) {
         return res.status(200).json({ error: "Something went wrong, try again later" })
@@ -347,6 +369,28 @@ app.post("/reserveTimeSlot", async (req, res) => {
     }
   }
 });
+
+app.post("/deleteTimeSlot", async (req, res) => {
+
+  var clientId = req.body.clientId;
+  var bank = req.body.bank;
+  var branch = req.body.branch;
+
+  try {
+    var TimeFramesSnap = await database.getDocumentFromCollection(bank, branch).collection('TimeFrames').get();
+    for (let TimeFrameSnap of TimeFramesSnap.docs) {
+      var TimeSlotsSnap = await TimeFrameSnap.ref.collection('TimeSlots').where('clientId', '==', clientId).get();
+      for (let TimeSlotSnap of TimeSlotsSnap.docs) {
+        TimeSlotSnap.ref.delete();
+      }
+    }
+    return res.status(200).json(`The time slot has been removed by ${clientId}`);
+  }
+  catch (error) {
+    return res.status(200).json({ error: "Something went wrong, try again later" })
+  }
+});
+
 
 const listener = app.listen(process.env.PORT || 5000, function () {
   console.log("Listening on port " + listener.address().port); //Listening
